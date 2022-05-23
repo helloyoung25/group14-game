@@ -14,7 +14,7 @@ import Actor
 
 import random
 import math
-score = 0000000
+score = 0
 bulletdamage = 50
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
@@ -136,7 +136,7 @@ def enemyIsDead(Cnt):
 # done이 False를 유지하는 동안 계속 실행, not False = True
 while not done:
     # set on 10 frames per second (FPS)
-    clock.tick(50)
+    clock.tick(30)
 
     # 게임을 실행하는 기능들을 실제로 여기에 구현
 
@@ -168,10 +168,15 @@ while not done:
     if food.y > screen.get_width():
         food.islive = False
 
-    if food.isAlive:
+    if food.islive:
         food.drop()
         food.drawActor(screen)
         food.estimateCenter()
+        if food.isCollide(hero):
+            food.islive = False
+            hero.decreaseVitality(10)
+           
+
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -264,11 +269,10 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(0.5)
+        hero.decreaseVitality(10)
 
-    if hero.isCollide(food):
-        print("음식과 충돌함")
-        hero.decreaseVitality(0.5)
+
+
 
     if bullet.y < 0:
         bulletFire = False
