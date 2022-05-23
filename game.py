@@ -14,22 +14,19 @@ import Actor
 
 import random
 import math
-score = 0000000
+score = 0
 bulletdamage = 50
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
 
-# 게임창에 텍스트를 출력하기 위한 함수코드
-# printText(출력하고싶은 내용, 컬러, 위치)
 
-
-def printText(msg, color='BLACK', pos=(50, 50)):
-    font = pygame.font.SysFont("consolas", 20)
-    textSurface = font.render(msg, True, pygame.Color(color), None)
-    textRect = textSurface.get_rect()
-    textRect.topleft = pos
-    screen.blit(textSurface, textRect)
+#게임창에 텍스트를 출력하기 위한 함수코드
+#printText(출력하고싶은 내용, 컬러, 위치)
+def printText(msg, color=(255,255,255), pos=(50,50)):
+    font= pygame.font.SysFont("consolas",20)
+    textSurface=font.render(msg,True,color)
+    screen.blit(textSurface,pos)
 
 
 # ===========================================파이게임 코딩을 시작하는 부분
@@ -139,7 +136,7 @@ def enemyIsDead(Cnt):
 # done이 False를 유지하는 동안 계속 실행, not False = True
 while not done:
     # set on 10 frames per second (FPS)
-    clock.tick(50)
+    clock.tick(30)
 
     # 게임을 실행하는 기능들을 실제로 여기에 구현
 
@@ -171,10 +168,15 @@ while not done:
     if food.y > screen.get_width():
         food.islive = False
 
-    if food.isAlive:
+    if food.islive:
         food.drop()
         food.drawActor(screen)
         food.estimateCenter()
+        if food.isCollide(hero):
+            food.islive = False
+            hero.decreaseVitality(10)
+           
+
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -267,11 +269,10 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(0.5)
+        hero.decreaseVitality(10)
 
-    if hero.isCollide(food):
-        print("음식과 충돌함")
-        hero.decreaseVitality(0.5)
+
+
 
     if bullet.y < 0:
         bulletFire = False
@@ -288,6 +289,7 @@ while not done:
         collsion = bullet.isCollide(enermy)
         if collsion == True:
             print("부딪힘")
+            score=score+bulletdamage
             enermy.decreaseVitality(bulletdamage)
             bulletFire = False
 
@@ -306,7 +308,6 @@ while not done:
 
     elif enermy.isDead == True:
         cnt += 1
-        score += cnt*10
         enemyIsDead(cnt)
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
