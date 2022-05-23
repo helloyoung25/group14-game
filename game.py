@@ -261,7 +261,7 @@ while not done:
         hero.decreaseVitality(0.5)
         
     if hero.isCollide(food):
-        print("적과 충돌함")
+        print("음식과 충돌함")
         hero.decreaseVitality(0.5)
 
     if bullet.y < 0:
