@@ -300,6 +300,7 @@ while not done:
 
     elif enermy.isDead == True:
         cnt += 1
+        score += cnt*10
         enemyIsDead(cnt)
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
