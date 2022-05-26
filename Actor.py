@@ -7,7 +7,9 @@ from pygame.locals import *
 import random
 import math
 
-#=================actor 클래스 정의=============================
+# =================actor 클래스 정의=============================
+
+
 class Actor():
 
     # actor의 멤버함수 객체가 생성될때 변수들을 초기화 하는 역할
@@ -33,11 +35,11 @@ class Actor():
         self.sound = 0
 
         self.isDead = False
-        
+
         self.isAlive = True
-        
+
         self.drop_speed = 7
-    
+
     def setSound(self, soundPath):
         # 객체에 의존되는 소리
         self.sound = pygame.mixer.Sound(soundPath)
@@ -47,21 +49,21 @@ class Actor():
 
     # 객체의 위치를 x와 y로 업데이트 시킴
     def setPosition(self, x, y):
-        self.x = x 
+        self.x = x
         self.y = y
 
     # 현재위치에서 이동변화량 만큼만 위치를 변화시킴
     def move(self, dx, dy):
         self.x = self.x + dx
         self.y = self.y + dy
-    
+
     def reset(self, screen: pygame.Surface):
         self.setPosition(random.randint(1, screen.get_width()), 1)
         self.islive = True
-    
+
     def drop(self):
         self.y += self.drop_speed
-        
+
     # image를 읽어서 객체의 모습을 셋팅할 수 있다.
     def setImage(self, imgPath):
         self.actor = self.pygame.image.load(imgPath)
@@ -70,7 +72,8 @@ class Actor():
         self.width = width
         self.height = height
         # 객체의 크기 조절
-        self.actor = self.pygame.transform.scale(self.actor, (self.width, self.height))
+        self.actor = self.pygame.transform.scale(
+            self.actor, (self.width, self.height))
 
     def setVitality(self, value):
         self.vitality = value
@@ -85,7 +88,7 @@ class Actor():
         if self.vitality < 0:
             self.vitality = 0
             self.isDead = True
-    
+
     def increaseVitality(self, value):
         self.vitality += value
         if self.vitality > 100:
@@ -102,18 +105,18 @@ class Actor():
 
     def moveRandomly(self, nX, nY):
         dX = random.uniform(-5, 5)
-        dY = random.uniform(-5, 5)  
+        dY = random.uniform(-5, 5)
         newX = self.centerX + dX
         newY = self.centerY + dY
         # if newX < nX*0.1  or newX > nX*0.5 or newY < nY*0.1 or newY > nY*0.5:
         #     pass
         # else:
-        self.x = self.x + dX #random.uniform(-20, 20)
-        self.y = self.y + dY #random.uniform(-20, 20)   
-
+        self.x = self.x + dX  # random.uniform(-20, 20)
+        self.y = self.y + dY  # random.uniform(-20, 20)
 
     def isCollide(self, otherActor):
-        dist = math.sqrt(math.pow(self.centerX - otherActor.centerX, 2) + math.pow(self.centerY - otherActor.centerY, 2))    
+        dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
+                         2) + math.pow(self.centerY - otherActor.centerY, 2))
         print(dist)
         if dist < otherActor.width/2:
             return True
@@ -125,11 +128,13 @@ class Actor():
 
     def drawEnergyBar(self, screen):
         x, y, width, height = self.getVitalStatus()
-        self.pygame.draw.rect(screen,(255,255,255),(x,y,self.width,height))
-        self.pygame.draw.rect(screen,(255,0,0),(x,y,width,height))
-    
-    def damage(self,value):
+        self.pygame.draw.rect(screen, (255, 255, 255),
+                              (x, y, self.width, height))
+        self.pygame.draw.rect(screen, (255, 0, 0), (x, y, width, height))
+
+    def damage(self, value):
         damage = value
+
 
 class Heal(Actor):
     def __init__(self, pygame):
@@ -144,6 +149,7 @@ class Heal(Actor):
 
     def drop(self):
         self.y += self.drop_speed
+
 
 class PowerUp(Actor):
     def __init__(self, pygame):
