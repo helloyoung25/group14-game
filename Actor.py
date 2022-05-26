@@ -164,3 +164,18 @@ class PowerUp(Actor):
 
     def drop(self):
         self.y += self.drop_speed
+
+
+class food(Actor):
+    def __init__(self, pygame):
+        super().__init__(pygame)
+        self.drop_speed = 10
+        self.islive = False
+        self.interval = 10
+
+    def reset(self, screen: pygame.Surface):
+        self.setPosition(random.randint(0, screen.get_width()), 0)
+        self.islive = True
+
+    def drop(self):
+        self.y += self.drop_speed
