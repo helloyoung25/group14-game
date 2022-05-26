@@ -4,6 +4,7 @@
 # 버그: 발사체가 화면 밖으로 계속 나갈 수 있음.
 
 # pygame 라이브러리를 가져와라.
+#from multiprocessing.context import ForkServerProcess
 import pygame
 # pygame 라이브러리를 pg 라는 이름으로 가져와라.
 import pygame as pg
@@ -19,17 +20,67 @@ bulletdamage = 50
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
+LIGHTBLUE = (0, 155, 155)
+
+# 게임창에 텍스트를 출력하기 위한 함수코드
+# printText(출력하고싶은 내용, 컬러, 위치)
+
+# font size 추가 했습니다
 
 
-#게임창에 텍스트를 출력하기 위한 함수코드
-#printText(출력하고싶은 내용, 컬러, 위치)
-def printText(msg, color=(255,255,255), pos=(50,50)):
-    font= pygame.font.SysFont("consolas",20)
-    textSurface=font.render(msg,True,color)
-    screen.blit(textSurface,pos)
+def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
+    font = pygame.font.SysFont("consolas", font_size)
+    textSurface = font.render(msg, True, color)
+    screen.blit(textSurface, pos)
+
+# key 입력을 기다리는 함수
 
 
+def wait_for_key():
+    waiting = True
+    while waiting:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                waiting = False
+            if event.type == pg.KEYUP:
+                waiting = False
+
+# 게임 시작화면을 구현
+
+
+def show_start_screen():
+    screen.fill(LIGHTBLUE)
+    printText("escape", 50, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Arrows to move, space to jump", 30,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to play", 30, color=(
+        255, 255, 255), pos=(nX/3, nY*3/4))
+    pygame.display.flip()
+    wait_for_key()
+
+# 스테이지 화면을 구현
+
+
+def show_stage_screen(cnt):
+    screen.fill(LIGHTBLUE)
+    printText("Stage" + str(cnt), 100, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to play", 30, color=(
+        255, 255, 255), pos=(nX/3, nY*3/4))
+    pygame.display.flip()
+    wait_for_key()
+
+# 게임 종료 화면
+
+
+def show_ending_screen():
+    screen.fill(LIGHTBLUE)
+    printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to Replay", 30, color=(
+        255, 255, 255), pos=(nX/3, nY*3/4))
+    pygame.display.flip()
+    wait_for_key()
 # ===========================================파이게임 코딩을 시작하는 부분
+
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
@@ -67,7 +118,7 @@ clock = pygame.time.Clock()
 hero = Actor.Actor(pygame)
 hero.setImage("man.png")
 hero.setScale(150, 150)
-hero.setPosition(nX/2, nY/2 + 150)
+hero.setPosition(nX/2-100, nY/2 + 150)
 hero.setVitality(100)
 hero.estimateCenter()
 
@@ -83,7 +134,7 @@ bullet.damage(20)
 enermy = Actor.Actor(pygame)
 enermy.setImage("tacco.png")
 enermy.setScale(180, 180)
-enermy.setPosition(nX/2, nY/2 - 350)
+enermy.setPosition(nX/2-100, nY/2 - 350)
 enermy.setVitality(500)
 enermy.estimateCenter()
 
@@ -116,22 +167,16 @@ dx = 0
 dy = 0
 ds = 0
 
-start_ticks = pygame.time.get_ticks()
 
 heal_flag = True
 
 # 적이 죽은 횟수
 cnt = 0
 
-
-def enemyIsDead(Cnt):
-    enermy.setImage("tacco.png")
-    enermy.setScale(180, 180)
-    enermy.setPosition(nX/2, nY/2-200)
-    enermy.setVitality(500*(Cnt+1))
-    enermy.estimateCenter()
-
-
+# 시작 전 화면을 보여줌
+show_start_screen()
+# 스테이지 사이사이의 비어있는 시간을 계산
+empty_ticks = pygame.time.get_ticks()-start_ticks
 # 반복자 while문
 # done이 False를 유지하는 동안 계속 실행, not False = True
 while not done:
@@ -145,20 +190,20 @@ while not done:
     screen.blit(background, (0, 0))
 
     # 경과시간(ms)을 1000으로 나누어 초 단위로 표시s
-    elapsed_timer = (pygame.time.get_ticks()-start_ticks)/1000
+    elapsed_timer = (pygame.time.get_ticks()-start_ticks-empty_ticks)/1000
     # 초를 분:초로 나타내기 위함
     elapsed_timer_hour = int(elapsed_timer/60)
     # 초를 분:초로 나타내기 위함
     elapsed_timer_sec = int(elapsed_timer % 60)
     # 텍스트 함수
-    printText(str(elapsed_timer_hour)+":"+str(elapsed_timer_sec),
+    printText(str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 20,
               color=(255, 255, 255), pos=(10, 10))
 
     # score 표시함수
-    printText("score:"+str(score), color=(255, 255, 255), pos=(10, 30))
+    printText("score:"+str(score), 20,  color=(255, 255, 255), pos=(10, 30))
 
     # stage 표시함수
-    printText("stage:"+str(cnt+1), color=(255, 255, 255), pos=(10, 50))
+    printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
 
@@ -289,7 +334,7 @@ while not done:
         collsion = bullet.isCollide(enermy)
         if collsion == True:
             print("부딪힘")
-            score=score+bulletdamage
+            score = score+bulletdamage
             enermy.decreaseVitality(bulletdamage)
             bulletFire = False
 
@@ -307,11 +352,14 @@ while not done:
             pygame.display.update()
 
     elif enermy.isDead == True:
+        start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
         cnt += 1
-        enemyIsDead(cnt)
-        enermy.drawActor(screen)
-        enermy.drawEnergyBar(screen)
-        enermy.moveRandomly(nX, nY)
+        show_stage_screen(cnt+1)
+        end_empty = pygame.time.get_ticks()  # 다음 stage가 시작되기 직전 시점 기록
+        enermy.setVitality(500*(cnt+1))
+        empty_ticks += (end_empty - start_empty)
+        hero.setPosition(nX/2-100, nY/2 + 150)
+        enermy.setPosition(nX/2-100, nY/2 - 350)
         enermy.isDead = False
 
     pygame.display.update()
