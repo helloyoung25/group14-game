@@ -36,7 +36,7 @@ class Actor():
 
         self.isDead = False
 
-        self.isAlive = True
+        self.islive = True
 
         self.drop_speed = 7
 

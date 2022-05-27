@@ -220,8 +220,6 @@ while not done:
         if food.isCollide(hero):
             food.islive = False
             hero.decreaseVitality(10)
-           
-
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -316,9 +314,6 @@ while not done:
         print("적과 충돌함")
         hero.decreaseVitality(10)
 
-
-
-
     if bullet.y < 0:
         bulletFire = False
 
@@ -341,6 +336,30 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
+
+    if hero.x < 0:
+        hero.x = 0
+
+    if hero.x > nX-150:
+        hero.x = nX-150
+
+    if hero.y < 0:
+        hero.y = 0
+
+    if hero.y > nY-150:
+        hero.y = nY-150
+
+    if enermy.x < 0:
+        enermy.x = 0
+
+    if enermy.x > nX-180:
+        enermy.x = nX-180
+
+    if enermy.y < 0:
+        enermy.y = 0
+
+    if enermy.y > nY-180:
+        enermy.y = nY-180
 
     if enermy.isDead == False:
         enermy.drawActor(screen)
