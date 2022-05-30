@@ -379,6 +379,13 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
+        random.seed()#랜덤함수 초기화
+        enermysel=random.randint(0,4)#이미지 선택을 위한 변수와 랜덤함수0~4
+        if enermysel==0: enermy.setImage("banana.png")
+        elif enermysel==1: enermy.setImage("cucum.png")
+        elif enermysel==2: enermy.setImage("hambu.png")
+        elif enermysel==3: enermy.setImage("melon.png")
+        else: enermy.setImage("tacco.png")
         enermy.isDead = False
 
     pygame.display.update()
