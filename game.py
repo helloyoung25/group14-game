@@ -17,6 +17,7 @@ import random
 import math
 score = 0
 bulletdamage = 50
+enermyList = ["tacco.png", "banana.png", "cucum.png", "melon.png"]
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
@@ -75,7 +76,9 @@ def show_stage_screen(cnt):
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
     printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to Replay", 30, color=(
+    printText("Your score:"+str(score), 50,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to quit", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -368,7 +371,8 @@ while not done:
 
         if hero.isDead == True:
             print("나 죽음")
-            pygame.display.update()
+            show_ending_screen()
+            pygame.quit()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -379,6 +383,9 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
+        enermy.setImage(enermyList[cnt % len(enermyList)])
+        if cnt % len(enermyList) == 0:
+            enermy.setScale(180+10*cnt, 180+10*cnt)  # 리스트 한바퀴 돌때마다 크기가 커짐
         enermy.isDead = False
 
     pygame.display.update()
