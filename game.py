@@ -75,7 +75,9 @@ def show_stage_screen(cnt):
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
     printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to Replay", 30, color=(
+    printText("Your score:"+str(score), 50,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to quit", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -368,7 +370,8 @@ while not done:
 
         if hero.isDead == True:
             print("나 죽음")
-            pygame.display.update()
+            show_ending_screen()
+            pygame.quit()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -379,13 +382,18 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
-        random.seed()#랜덤함수 초기화
-        enermysel=random.randint(0,4)#이미지 선택을 위한 변수와 랜덤함수0~4
-        if enermysel==0: enermy.setImage("banana.png")
-        elif enermysel==1: enermy.setImage("cucum.png")
-        elif enermysel==2: enermy.setImage("hambu.png")
-        elif enermysel==3: enermy.setImage("melon.png")
-        else: enermy.setImage("tacco.png")
+        random.seed()  # 랜덤함수 초기화
+        enermysel = random.randint(0, 4)  # 이미지 선택을 위한 변수와 랜덤함수0~4
+        if enermysel == 0:
+            enermy.setImage("banana.png")
+        elif enermysel == 1:
+            enermy.setImage("cucum.png")
+        elif enermysel == 2:
+            enermy.setImage("hambu.png")
+        elif enermysel == 3:
+            enermy.setImage("melon.png")
+        else:
+            enermy.setImage("tacco.png")
         enermy.isDead = False
 
     pygame.display.update()
