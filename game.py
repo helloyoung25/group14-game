@@ -75,12 +75,15 @@ def show_stage_screen(cnt):
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
     printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to Replay", 30, color=(
+    printText("Your score:"+str(score), 50,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to quit", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
+    
+    
 # ===========================================파이게임 코딩을 시작하는 부분
-
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
@@ -160,13 +163,14 @@ PowerUp.estimateCenter()
 
 # 총알이 날아가고 있는가?
 bulletFire = False
+# 총알 좌표들 모아두는 리스트
+bullets = []
 # bullet delta 총알이 날아가는 변화량
 bd = 0
 
 dx = 0
 dy = 0
 ds = 0
-
 
 heal_flag = True
 
@@ -281,13 +285,13 @@ while not done:
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
 
-                if bulletFire == False:
-                    bullet.soundPlay()
-                    hero.estimateCenter()
-                    # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
-                    bullet.setPosition(hero.centerX, hero.centerY)
-                    bd = -20
-                    bulletFire = True
+                bullet.soundPlay()
+                hero.estimateCenter()
+                # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
+                bullet.setPosition(hero.centerX, hero.centerY)
+                bd = -20
+                bullets.append(bullet)
+                bulletFire = True
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -318,20 +322,29 @@ while not done:
         bulletFire = False
 
     # 총을 쏘고 있는가? 이게 참이라면 총알을 계속 이동시켜야 함
-    if bulletFire == True:
+    for i in range(len(bullets)) :
+        if bulletFire:
+            bullets[i].move(0, bd)  
+            bullets[i].estimateCenter()
+            enermy.estimateCenter()
+            food.estimateCenter()
+            bullets[i].drawActor(screen)
 
-        bullet.move(0, bd)
-        bullet.estimateCenter()
-        enermy.estimateCenter()
-        food.estimateCenter()
-        bullet.drawActor(screen)
-
-        collsion = bullet.isCollide(enermy)
-        if collsion == True:
-            print("부딪힘")
-            score = score+bulletdamage
-            enermy.decreaseVitality(bulletdamage)
-            bulletFire = False
+            collsion = bullets[i].isCollide(enermy)
+            
+            if bullets[i].y < 0: # 총알이 좌표 내를 벗어난 경우
+                del bullets[i]
+                bulletFire = False
+                
+            elif collsion == True: # 총알이 객체와 부딪힌 경우
+                print("부딪힘")
+                score = score + bulletdamage
+                enermy.decreaseVitality(bulletdamage)
+                del bullets[i]
+                bulletFire = False
+            
+            else:
+                print("오류!")
 
     hero.move(dx, dy)
     hero.drawActor(screen)
@@ -368,7 +381,8 @@ while not done:
 
         if hero.isDead == True:
             print("나 죽음")
-            pygame.display.update()
+            show_ending_screen()
+            pygame.quit()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -379,13 +393,18 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
-        random.seed()#랜덤함수 초기화
-        enermysel=random.randint(0,4)#이미지 선택을 위한 변수와 랜덤함수0~4
-        if enermysel==0: enermy.setImage("banana.png")
-        elif enermysel==1: enermy.setImage("cucum.png")
-        elif enermysel==2: enermy.setImage("hambu.png")
-        elif enermysel==3: enermy.setImage("melon.png")
-        else: enermy.setImage("tacco.png")
+        random.seed()  # 랜덤함수 초기화
+        enermysel = random.randint(0, 4)  # 이미지 선택을 위한 변수와 랜덤함수0~4
+        if enermysel == 0:
+            enermy.setImage("banana.png")
+        elif enermysel == 1:
+            enermy.setImage("cucum.png")
+        elif enermysel == 2:
+            enermy.setImage("hambu.png")
+        elif enermysel == 3:
+            enermy.setImage("melon.png")
+        else:
+            enermy.setImage("tacco.png")
         enermy.isDead = False
 
     pygame.display.update()
