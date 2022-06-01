@@ -118,7 +118,9 @@ nY = 700
 size = [nX, nY]
 
 keyFlag = None
-
+back_img=["background.png","background5.png","background2.png","background3.png","background4.png"]#배경이미지 리스트
+enermy_img=["tacco.png","cucum.png","hambu.png","melon.png","banana.png"]#적이미지 리스트
+attack_img=["taccoAttack.png","cucumAttack.png","hambuAttack.png","melonAttack.png","bananaAttack.png"]#공격물체 이미지 리스트
 # 게임 창의 크기를 셋팅한다.
 # pygame 라이브러리 사용
 screen = pygame.display.set_mode(size)
@@ -156,7 +158,7 @@ enermy.setVitality(500)
 enermy.estimateCenter()
 
 # enermy 공격 물체 = 음식 (-Attack.png)
-food = Actor.Actor(pygame)
+food = Actor.Food(pygame)
 food.setImage("taccoAttack.png")
 food.setScale(70, 70)
 food.setPosition(nX/2, nY/2 - 350)
@@ -207,6 +209,7 @@ while not done:
     screen.fill(BLACK)
     screen.blit(background, (0, 0))
 
+    enermysel=cnt%5
     # 경과시간(ms)을 1000으로 나누어 초 단위로 표시s
     elapsed_timer = (pygame.time.get_ticks()-start_ticks-empty_ticks)/1000
     # 초를 분:초로 나타내기 위함
@@ -224,14 +227,19 @@ while not done:
     printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
+    
+    background=pygame.image.load(back_img[enermysel])#스테이지에 따른 배경 변화
+    enermy.setImage(enermy_img[enermysel])#스테이지에 따른 적 이미지 변화
+    food.setImage(attack_img[enermysel])#스테이지에 따른 공격물체 변화
 
-    if time % PowerUp.interval < 0.1 and PowerUp.islive == False:
+    if time % food.interval < 0.1 and food.islive == False:
         food.reset(screen)
 
     if food.y > screen.get_width():
         food.islive = False
 
     if food.islive:
+        food.setScale(70, 70)
         food.drop()
         food.drawActor(screen)
         food.estimateCenter()
@@ -330,7 +338,7 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(10)
+        hero.decreaseVitality(5)
 
     if bullet.y < 0:
         bulletFire = False
@@ -407,18 +415,7 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
-        random.seed()  # 랜덤함수 초기화
-        enermysel = random.randint(0, 4)  # 이미지 선택을 위한 변수와 랜덤함수0~4
-        if enermysel == 0:
-            enermy.setImage("banana.png")
-        elif enermysel == 1:
-            enermy.setImage("cucum.png")
-        elif enermysel == 2:
-            enermy.setImage("hambu.png")
-        elif enermysel == 3:
-            enermy.setImage("melon.png")
-        else:
-            enermy.setImage("tacco.png")
+                   
         enermy.isDead = False
 
     pygame.display.update()

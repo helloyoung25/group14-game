@@ -168,7 +168,7 @@ class PowerUp(Actor):
         self.y += self.drop_speed
 
 
-class food(Actor):
+class Food(Actor):
     def __init__(self, pygame):
         super().__init__(pygame)
         self.drop_speed = 10
