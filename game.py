@@ -142,7 +142,7 @@ enermy.setVitality(500)
 enermy.estimateCenter()
 
 # enermy 공격 물체 = 음식 (-Attack.png)
-food = Actor.Actor(pygame)
+food = Actor.Food(pygame)
 food.setImage("taccoAttack.png")
 food.setScale(70, 70)
 food.setPosition(nX/2, nY/2 - 350)
@@ -211,7 +211,7 @@ while not done:
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
 
-    if time % PowerUp.interval < 0.1 and PowerUp.islive == False:
+    if time % food.interval < 0.1 and food.islive == False:
         food.reset(screen)
 
     if food.y > screen.get_width():
