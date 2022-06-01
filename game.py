@@ -45,6 +45,20 @@ def wait_for_key():
             if event.type == pg.KEYUP:
                 waiting = False
 
+# 게임 설명 화면
+
+
+def show_example_screen():
+    screen.fill(LIGHTBLUE)
+    printText("이 게임은 하늘에서 떨어지는 음식을 피하면서 적을 물리치는 게임입니다.", 30,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to Next", 30, color=(
+        255, 255, 255), pos=(nX/3, nY*3/4))
+    pygame.display.flip()
+    wait_for_key()
+    printText("   ", 30,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    wait_for_key()
 # 게임 시작화면을 구현
 
 
@@ -81,8 +95,8 @@ def show_ending_screen():
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
-    
-    
+
+
 # ===========================================파이게임 코딩을 시작하는 부분
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
@@ -322,27 +336,27 @@ while not done:
         bulletFire = False
 
     # 총을 쏘고 있는가? 이게 참이라면 총알을 계속 이동시켜야 함
-    for i in range(len(bullets)) :
+    for i in range(len(bullets)):
         if bulletFire:
-            bullets[i].move(0, bd)  
+            bullets[i].move(0, bd)
             bullets[i].estimateCenter()
             enermy.estimateCenter()
             food.estimateCenter()
             bullets[i].drawActor(screen)
 
             collsion = bullets[i].isCollide(enermy)
-            
-            if bullets[i].y < 0: # 총알이 좌표 내를 벗어난 경우
+
+            if bullets[i].y < 0:  # 총알이 좌표 내를 벗어난 경우
                 del bullets[i]
                 bulletFire = False
-                
-            elif collsion == True: # 총알이 객체와 부딪힌 경우
+
+            elif collsion == True:  # 총알이 객체와 부딪힌 경우
                 print("부딪힘")
                 score = score + bulletdamage
                 enermy.decreaseVitality(bulletdamage)
                 del bullets[i]
                 bulletFire = False
-            
+
             else:
                 print("오류!")
 

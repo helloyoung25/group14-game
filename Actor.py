@@ -40,6 +40,8 @@ class Actor():
 
         self.drop_speed = 7
 
+        self.count = 0
+
     def setSound(self, soundPath):
         # 객체에 의존되는 소리
         self.sound = pygame.mixer.Sound(soundPath)
