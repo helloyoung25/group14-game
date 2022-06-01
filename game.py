@@ -217,7 +217,7 @@ while not done:
     background=pygame.image.load(back_img[enermysel])#스테이지에 따른 배경 변화
     enermy.setImage(enermy_img[enermysel])#스테이지에 따른 적 이미지 변화
     food.setImage(attack_img[enermysel])#스테이지에 따른 공격물체 변화
-    
+
     if time % food.interval < 0.1 and food.islive == False:
         food.reset(screen)
 
@@ -324,7 +324,7 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(10)
+        hero.decreaseVitality(5)
 
     if bullet.y < 0:
         bulletFire = False
