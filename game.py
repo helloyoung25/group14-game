@@ -81,8 +81,9 @@ def show_ending_screen():
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
+    
+    
 # ===========================================파이게임 코딩을 시작하는 부분
-
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
@@ -162,13 +163,14 @@ PowerUp.estimateCenter()
 
 # 총알이 날아가고 있는가?
 bulletFire = False
+# 총알 좌표들 모아두는 리스트
+bullets = []
 # bullet delta 총알이 날아가는 변화량
 bd = 0
 
 dx = 0
 dy = 0
 ds = 0
-
 
 heal_flag = True
 
@@ -283,13 +285,13 @@ while not done:
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
 
-                if bulletFire == False:
-                    bullet.soundPlay()
-                    hero.estimateCenter()
-                    # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
-                    bullet.setPosition(hero.centerX, hero.centerY)
-                    bd = -20
-                    bulletFire = True
+                bullet.soundPlay()
+                hero.estimateCenter()
+                # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
+                bullet.setPosition(hero.centerX, hero.centerY)
+                bd = -20
+                bullets.append(bullet)
+                bulletFire = True
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -320,20 +322,29 @@ while not done:
         bulletFire = False
 
     # 총을 쏘고 있는가? 이게 참이라면 총알을 계속 이동시켜야 함
-    if bulletFire == True:
+    for i in range(len(bullets)) :
+        if bulletFire:
+            bullets[i].move(0, bd)  
+            bullets[i].estimateCenter()
+            enermy.estimateCenter()
+            food.estimateCenter()
+            bullets[i].drawActor(screen)
 
-        bullet.move(0, bd)
-        bullet.estimateCenter()
-        enermy.estimateCenter()
-        food.estimateCenter()
-        bullet.drawActor(screen)
-
-        collsion = bullet.isCollide(enermy)
-        if collsion == True:
-            print("부딪힘")
-            score = score+bulletdamage
-            enermy.decreaseVitality(bulletdamage)
-            bulletFire = False
+            collsion = bullets[i].isCollide(enermy)
+            
+            if bullets[i].y < 0: # 총알이 좌표 내를 벗어난 경우
+                del bullets[i]
+                bulletFire = False
+                
+            elif collsion == True: # 총알이 객체와 부딪힌 경우
+                print("부딪힘")
+                score = score + bulletdamage
+                enermy.decreaseVitality(bulletdamage)
+                del bullets[i]
+                bulletFire = False
+            
+            else:
+                print("오류!")
 
     hero.move(dx, dy)
     hero.drawActor(screen)
