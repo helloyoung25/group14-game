@@ -316,7 +316,7 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(10)
+        hero.decreaseVitality(5)
 
     if bullet.y < 0:
         bulletFire = False
