@@ -1,8 +1,3 @@
-# 버그: 피사체가 사라졌지만 총알은 계속 맞는 버그
-# 버그: 피사체가 있는 위치에 총을 쏠 경우 총알의 발사속도가 빨라짐
-# 버그: 발사체의 y축 위치에 따라서 총알의 발사속도가 달라짐
-# 버그: 발사체가 화면 밖으로 계속 나갈 수 있음.
-
 # pygame 라이브러리를 가져와라.
 #from multiprocessing.context import ForkServerProcess
 import pygame
@@ -10,7 +5,6 @@ import pygame
 import pygame as pg
 from pygame.locals import *
 from operator import truediv
-
 import Actor
 
 import random
@@ -29,10 +23,13 @@ LIGHTBLUE = (0, 155, 155)
 
 
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
-    font = pygame.font.SysFont("consolas", font_size)
+    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
     screen.blit(textSurface, pos)
 
+def printEnergy(self):#체력 수치화 함수 선언
+    x,y,width,height=self.getVitalStatus()
+    printText(str(self.vitality)+"/"+str(self.maxVitality),10,(0,0,0),pos=(x+(self.width/2)-15,y+height-10))
 # key 입력을 기다리는 함수
 
 
@@ -50,10 +47,10 @@ def wait_for_key():
 
 def show_start_screen():
     screen.fill(LIGHTBLUE)
-    printText("escape", 50, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Arrows to move, space to jump", 30,
+    printText("escape", 70, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Arrows to move, space to jump", 50,
               color=(255, 255, 255), pos=(nX/3, nY/2))
-    printText("Press a key to play", 30, color=(
+    printText("Press a key to play", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -63,8 +60,8 @@ def show_start_screen():
 
 def show_stage_screen(cnt):
     screen.fill(LIGHTBLUE)
-    printText("Stage" + str(cnt), 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to play", 30, color=(
+    printText("Stage" + str(cnt), 120, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to play", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -74,10 +71,10 @@ def show_stage_screen(cnt):
 
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
-    printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Your score:"+str(score), 50,
+    printText("Game Over", 120, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Your score:"+str(score), 70,
               color=(255, 255, 255), pos=(nX/3, nY/2))
-    printText("Press a key to quit", 30, color=(
+    printText("Press a key to quit", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -104,7 +101,7 @@ nY = 700
 size = [nX, nY]
 
 keyFlag = None
-back_img=["background.png","background5.png","background2.png","background3.png","background4.png"]#배경이미지 리스트
+back_img=["background.png","background3.png","background2.png","background5.png","background4.png"]#배경이미지 리스트
 enermy_img=["tacco.png","cucum.png","hambu.png","melon.png","banana.png"]#적이미지 리스트
 attack_img=["taccoAttack.png","cucumAttack.png","hambuAttack.png","melonAttack.png","bananaAttack.png"]#공격물체 이미지 리스트
 # 게임 창의 크기를 셋팅한다.
@@ -203,21 +200,26 @@ while not done:
     # 초를 분:초로 나타내기 위함
     elapsed_timer_sec = int(elapsed_timer % 60)
     # 텍스트 함수
-    printText(str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 20,
-              color=(255, 255, 255), pos=(10, 10))
+    printText("time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
+              color=(255, 71, 71), pos=(10, 10))
 
     # score 표시함수
-    printText("score:"+str(score), 20,  color=(255, 255, 255), pos=(10, 30))
+    printText("score:"+str(score), 30,  color=(255, 71, 71), pos=(10, 40))
 
     # stage 표시함수
-    printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
+    printText("stage:"+str(cnt+1), 30, color=(255, 71, 71), pos=(10, 70))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
     
     background=pygame.image.load(back_img[enermysel])#스테이지에 따른 배경 변화
-    enermy.setImage(enermy_img[enermysel])#스테이지에 따른 적 이미지 변화
-    food.setImage(attack_img[enermysel])#스테이지에 따른 공격물체 변화
 
+    enermy.setImage(enermy_img[enermysel])#스테이지에 따른 적 이미지 변화
+    enermy.setScale(180, 180)
+    
+
+    food.setImage(attack_img[enermysel])#스테이지에 따른 공격물체 변화
+    food.setScale(70, 70)
+    
     if time % food.interval < 0.1 and food.islive == False:
         food.reset(screen)
 
@@ -276,22 +278,22 @@ while not done:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                print("왼쪽키 누름")
+                
                 dx = - 10
             elif event.key == pygame.K_RIGHT:
-                print("오른쪽키 누름")
+                
                 dx = 10
             elif event.key == pygame.K_DOWN:
-                print("아래키 누름")
+                
                 dy = 10
             elif event.key == pygame.K_UP:
-                print("위로키 누름")
+                
                 dy = -10
             elif event.key == pygame.K_a:
-                print("버튼a 누름")
+                
                 ds = 3
             elif event.key == pygame.K_SPACE:
-                print("스페이스 버튼 누름")
+                
 
                 bullet.soundPlay()
                 hero.estimateCenter()
@@ -303,19 +305,19 @@ while not done:
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                print("왼쪽키 떼짐")
+                
                 dx = 0
             elif event.key == pygame.K_RIGHT:
-                print("오른쪽키 떼짐")
+             
                 dx = 0
             elif event.key == pygame.K_DOWN:
-                print("아래키 떼짐")
+             
                 dy = 0
             elif event.key == pygame.K_UP:
-                print("위로키 떼짐")
+              
                 dy = 0
             elif event.key == pygame.K_a:
-                print("버튼a 누름")
+            
                 ds = 0
 
     hero.estimateCenter()
@@ -325,6 +327,7 @@ while not done:
     if hero.isCollide(enermy):
         print("적과 충돌함")
         hero.decreaseVitality(5)
+        
 
     if bullet.y < 0:
         bulletFire = False
@@ -351,13 +354,15 @@ while not done:
                 del bullets[i]
                 bulletFire = False
             
-            else:
-                print("오류!")
+           
 
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
 
+    printEnergy(hero)#히어로 체력 수치화
+   
+    
     if hero.x < 0:
         hero.x = 0
 
@@ -385,6 +390,7 @@ while not done:
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
+        printEnergy(enermy)#적 체력 수치화
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
