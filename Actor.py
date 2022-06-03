@@ -6,7 +6,7 @@ from pygame.locals import *
 
 import random
 import math
-
+import time
 # =================actor 클래스 정의=============================
 
 
@@ -119,8 +119,8 @@ class Actor():
     def isCollide(self, otherActor):
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
                          2) + math.pow(self.centerY - otherActor.centerY, 2))
-        print(dist)
-        if dist < otherActor.width/2:
+
+        if dist < otherActor.width/1.45:
             return True
         else:
             return False
