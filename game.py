@@ -288,13 +288,14 @@ while not done:
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
 
-                if bulletFire == False:
-                    bullet.soundPlay()
-                    hero.estimateCenter()
-                    # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
-                    bullet.setPosition(hero.centerX, hero.centerY)
-                    bd = -20
-                    bulletFire = True
+                bullet.soundPlay()
+                hero.estimateCenter()
+                # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
+                bullet.setPosition(hero.centerX, hero.centerY)
+                bd = -20
+                bullets.append(bullet)
+                bulletFire = True
+                
             elif event.key == pygame.K_x:
                 pygame.quit()
 
