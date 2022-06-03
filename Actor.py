@@ -174,7 +174,8 @@ class food(Actor):
         self.interval = 10
 
     def reset(self, screen: pygame.Surface):
-        self.setPosition(random.randint(0, screen.get_width()), 0)
+        self.setPosition(random.randint(0, screen.get_width()),
+                         random.randint(-screen.get_height(), 0))
         self.islive = True
 
     def drop(self):
