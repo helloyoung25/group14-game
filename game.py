@@ -212,21 +212,21 @@ while not done:
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
     for i in range(FOODCOUNT):
-            if foods[i].islive == False:
-                foods[i].reset(screen)
+        if foods[i].islive == False:
+            foods[i].reset(screen)
 
-            # 화면 밖으로 넘어가면 디진다
-            if foods[i].y > screen.get_width():
+        # 화면 밖으로 넘어가면 디진다
+        if foods[i].y > screen.get_width():
+            foods[i].islive = False
+
+        # 살아있는 경우
+        if foods[i].islive:
+            foods[i].drop()
+            foods[i].drawActor(screen)
+            foods[i].estimateCenter()
+            if foods[i].isCollide(hero):
                 foods[i].islive = False
-
-            # 살아있는 경우
-            if foods[i].islive:
-                foods[i].drop()
-                foods[i].drawActor(screen)
-                foods[i].estimateCenter()
-                if foods[i].isCollide(hero):
-                    foods[i].islive = False
-                    hero.decreaseVitality(10)
+                hero.decreaseVitality(10)
 
     # 힐팩이 너무 밑으로 내려가면
     if heal.y > screen.get_width():
@@ -284,9 +284,7 @@ while not done:
                 ds = 3
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
-            elif event.key == pygame.K_x:
-                pygame.quit()
-
+        
                 if bulletFire == False:
                     bullet.soundPlay()
                     hero.estimateCenter()
@@ -294,6 +292,8 @@ while not done:
                     bullet.setPosition(hero.centerX, hero.centerY)
                     bd = -20
                     bulletFire = True
+            elif event.key == pygame.K_x:
+                pygame.quit()
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
