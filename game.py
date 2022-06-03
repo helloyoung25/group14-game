@@ -1,3 +1,8 @@
+# 버그: 피사체가 사라졌지만 총알은 계속 맞는 버그
+# 버그: 피사체가 있는 위치에 총을 쏠 경우 총알의 발사속도가 빨라짐
+# 버그: 발사체의 y축 위치에 따라서 총알의 발사속도가 달라짐
+# 버그: 발사체가 화면 밖으로 계속 나갈 수 있음.
+
 # pygame 라이브러리를 가져와라.
 #from multiprocessing.context import ForkServerProcess
 import pygame
@@ -5,12 +10,14 @@ import pygame
 import pygame as pg
 from pygame.locals import *
 from operator import truediv
+
 import Actor
 
 import random
 import math
 score = 0
 bulletdamage = 50
+FOODCOUNT = 10
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
@@ -23,13 +30,10 @@ LIGHTBLUE = (0, 155, 155)
 
 
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
-    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
+    font = pygame.font.SysFont("consolas", font_size)
     textSurface = font.render(msg, True, color)
     screen.blit(textSurface, pos)
 
-def printEnergy(self):#체력 수치화 함수 선언
-    x,y,width,height=self.getVitalStatus()
-    printText(str(self.vitality)+"/"+str(self.maxVitality),10,(0,0,0),pos=(x+(self.width/2)-15,y+height-10))
 # key 입력을 기다리는 함수
 
 
@@ -47,10 +51,10 @@ def wait_for_key():
 
 def show_start_screen():
     screen.fill(LIGHTBLUE)
-    printText("escape", 70, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Arrows to move, space to jump", 50,
+    printText("escape", 50, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Arrows to move, space to jump", 30,
               color=(255, 255, 255), pos=(nX/3, nY/2))
-    printText("Press a key to play", 50, color=(
+    printText("Press a key to play", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -60,8 +64,8 @@ def show_start_screen():
 
 def show_stage_screen(cnt):
     screen.fill(LIGHTBLUE)
-    printText("Stage" + str(cnt), 120, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to play", 50, color=(
+    printText("Stage" + str(cnt), 100, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to play", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
@@ -71,16 +75,13 @@ def show_stage_screen(cnt):
 
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
-    printText("Game Over", 120, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Your score:"+str(score), 70,
-              color=(255, 255, 255), pos=(nX/3, nY/2))
-    printText("Press a key to quit", 50, color=(
+    printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to Replay", 30, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
-    
-    
 # ===========================================파이게임 코딩을 시작하는 부분
+
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
@@ -101,9 +102,7 @@ nY = 700
 size = [nX, nY]
 
 keyFlag = None
-back_img=["background.png","background3.png","background2.png","background5.png","background4.png"]#배경이미지 리스트
-enermy_img=["tacco.png","cucum.png","hambu.png","melon.png","banana.png"]#적이미지 리스트
-attack_img=["taccoAttack.png","cucumAttack.png","hambuAttack.png","melonAttack.png","bananaAttack.png"]#공격물체 이미지 리스트
+
 # 게임 창의 크기를 셋팅한다.
 # pygame 라이브러리 사용
 screen = pygame.display.set_mode(size)
@@ -141,12 +140,16 @@ enermy.setVitality(500)
 enermy.estimateCenter()
 
 # enermy 공격 물체 = 음식 (-Attack.png)
-food = Actor.Food(pygame)
-food.setImage("taccoAttack.png")
-food.setScale(70, 70)
-food.setPosition(nX/2, nY/2 - 350)
-food.estimateCenter()
-food.damage(10)
+foods: list[Actor.food] = []
+for i in range(FOODCOUNT):
+    food = Actor.food(pygame)
+    food.setImage("taccoAttack.png")
+    food.setScale(70, 70)
+    food.setPosition(nX/2, nY/2 - 350)
+    food.estimateCenter()
+    food.damage(10)
+    foods.append(food)
+
 
 # 힐팩 액터
 heal = Actor.Heal(pygame)
@@ -162,14 +165,13 @@ PowerUp.estimateCenter()
 
 # 총알이 날아가고 있는가?
 bulletFire = False
-# 총알 좌표들 모아두는 리스트
-bullets = []
 # bullet delta 총알이 날아가는 변화량
 bd = 0
 
 dx = 0
 dy = 0
 ds = 0
+
 
 heal_flag = True
 
@@ -192,7 +194,6 @@ while not done:
     screen.fill(BLACK)
     screen.blit(background, (0, 0))
 
-    enermysel=cnt%5
     # 경과시간(ms)을 1000으로 나누어 초 단위로 표시s
     elapsed_timer = (pygame.time.get_ticks()-start_ticks-empty_ticks)/1000
     # 초를 분:초로 나타내기 위함
@@ -200,43 +201,32 @@ while not done:
     # 초를 분:초로 나타내기 위함
     elapsed_timer_sec = int(elapsed_timer % 60)
     # 텍스트 함수
-    printText("time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
-              color=(255, 71, 71), pos=(10, 10))
+    printText(str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 20,
+              color=(255, 255, 255), pos=(10, 10))
 
     # score 표시함수
-    printText("score:"+str(score), 30,  color=(255, 71, 71), pos=(10, 40))
+    printText("score:"+str(score), 20,  color=(255, 255, 255), pos=(10, 30))
 
     # stage 표시함수
-    printText("stage:"+str(cnt+1), 30, color=(255, 71, 71), pos=(10, 70))
+    printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
-    
-    background=pygame.image.load(back_img[enermysel])#스테이지에 따른 배경 변화
+    for i in range(FOODCOUNT):
+            if foods[i].islive == False:
+                foods[i].reset(screen)
 
-    enermy.setImage(enermy_img[enermysel])#스테이지에 따른 적 이미지 변화
-    enermy.setScale(180, 180)
-    
+            # 화면 밖으로 넘어가면 디진다
+            if foods[i].y > screen.get_width():
+                foods[i].islive = False
 
-    food.setImage(attack_img[enermysel])#스테이지에 따른 공격물체 변화
-    food.setScale(70, 70)
-    
-    if time % food.interval < 0.1 and food.islive == False:
-        food.reset(screen)
-
-    if food.y > screen.get_width():
-        food.islive = False
-
-    if food.islive:
-        food.setScale(70, 70)
-        food.drop()
-        food.drawActor(screen)
-        food.estimateCenter()
-        if food.isCollide(hero):
-            food.islive = False
-            hero.decreaseVitality(10)
-
-    if time % heal.interval < 0.1 and heal.islive == False:
-        heal.reset(screen)
+            # 살아있는 경우
+            if foods[i].islive:
+                foods[i].drop()
+                foods[i].drawActor(screen)
+                foods[i].estimateCenter()
+                if foods[i].isCollide(hero):
+                    foods[i].islive = False
+                    hero.decreaseVitality(10)
 
     # 힐팩이 너무 밑으로 내려가면
     if heal.y > screen.get_width():
@@ -278,46 +268,48 @@ while not done:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                
+                print("왼쪽키 누름")
                 dx = - 10
             elif event.key == pygame.K_RIGHT:
-                
+                print("오른쪽키 누름")
                 dx = 10
             elif event.key == pygame.K_DOWN:
-                
+                print("아래키 누름")
                 dy = 10
             elif event.key == pygame.K_UP:
-                
+                print("위로키 누름")
                 dy = -10
             elif event.key == pygame.K_a:
-                
+                print("버튼a 누름")
                 ds = 3
             elif event.key == pygame.K_SPACE:
-                
+                print("스페이스 버튼 누름")
+            elif event.key == pygame.K_x:
+                pygame.quit()
 
-                bullet.soundPlay()
-                hero.estimateCenter()
-                # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
-                bullet.setPosition(hero.centerX, hero.centerY)
-                bd = -20
-                bullets.append(bullet)
-                bulletFire = True
+                if bulletFire == False:
+                    bullet.soundPlay()
+                    hero.estimateCenter()
+                    # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
+                    bullet.setPosition(hero.centerX, hero.centerY)
+                    bd = -20
+                    bulletFire = True
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                
+                print("왼쪽키 떼짐")
                 dx = 0
             elif event.key == pygame.K_RIGHT:
-             
+                print("오른쪽키 떼짐")
                 dx = 0
             elif event.key == pygame.K_DOWN:
-             
+                print("아래키 떼짐")
                 dy = 0
             elif event.key == pygame.K_UP:
-              
+                print("위로키 떼짐")
                 dy = 0
             elif event.key == pygame.K_a:
-            
+                print("버튼a 누름")
                 ds = 0
 
     hero.estimateCenter()
@@ -326,43 +318,31 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(5)
-        
+        hero.decreaseVitality(10)
 
     if bullet.y < 0:
         bulletFire = False
 
     # 총을 쏘고 있는가? 이게 참이라면 총알을 계속 이동시켜야 함
-    for i in range(len(bullets)) :
-        if bulletFire:
-            bullets[i].move(0, bd)  
-            bullets[i].estimateCenter()
-            enermy.estimateCenter()
-            food.estimateCenter()
-            bullets[i].drawActor(screen)
+    if bulletFire == True:
 
-            collsion = bullets[i].isCollide(enermy)
-            
-            if bullets[i].y < 0: # 총알이 좌표 내를 벗어난 경우
-                del bullets[i]
-                bulletFire = False
-                
-            elif collsion == True: # 총알이 객체와 부딪힌 경우
-                print("부딪힘")
-                score = score + bulletdamage
-                enermy.decreaseVitality(bulletdamage)
-                del bullets[i]
-                bulletFire = False
-            
-           
+        bullet.move(0, bd)
+        bullet.estimateCenter()
+        enermy.estimateCenter()
+        food.estimateCenter()
+        bullet.drawActor(screen)
+
+        collsion = bullet.isCollide(enermy)
+        if collsion == True:
+            print("부딪힘")
+            score = score+bulletdamage
+            enermy.decreaseVitality(bulletdamage)
+            bulletFire = False
 
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
 
-    printEnergy(hero)#히어로 체력 수치화
-   
-    
     if hero.x < 0:
         hero.x = 0
 
@@ -390,13 +370,11 @@ while not done:
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
-        printEnergy(enermy)#적 체력 수치화
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
             print("나 죽음")
-            show_ending_screen()
-            pygame.quit()
+            pygame.display.update()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -407,7 +385,6 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
-                   
         enermy.isDead = False
 
     pygame.display.update()
