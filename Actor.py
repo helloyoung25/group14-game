@@ -178,5 +178,6 @@ class food(Actor):
                          random.randint(-screen.get_height(), 0))
         self.islive = True
 
+
     def drop(self):
         self.y += self.drop_speed
