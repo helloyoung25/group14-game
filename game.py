@@ -17,6 +17,7 @@ import random
 import math
 score = 0
 bulletdamage = 50
+FOODCOUNT = 10
 
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
@@ -139,12 +140,16 @@ enermy.setVitality(500)
 enermy.estimateCenter()
 
 # enermy 공격 물체 = 음식 (-Attack.png)
-food = Actor.Actor(pygame)
-food.setImage("taccoAttack.png")
-food.setScale(70, 70)
-food.setPosition(nX/2, nY/2 - 350)
-food.estimateCenter()
-food.damage(10)
+foods: list[Actor.food] = []
+for i in range(FOODCOUNT):
+    food = Actor.food(pygame)
+    food.setImage("taccoAttack.png")
+    food.setScale(70, 70)
+    food.setPosition(nX/2, nY/2 - 350)
+    food.estimateCenter()
+    food.damage(10)
+    foods.append(food)
+
 
 # 힐팩 액터
 heal = Actor.Heal(pygame)
@@ -206,23 +211,22 @@ while not done:
     printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
+    for i in range(FOODCOUNT):
+            if foods[i].islive == False:
+                foods[i].reset(screen)
 
-    if time % PowerUp.interval < 0.1 and PowerUp.islive == False:
-        food.reset(screen)
+            # 화면 밖으로 넘어가면 디진다
+            if foods[i].y > screen.get_width():
+                foods[i].islive = False
 
-    if food.y > screen.get_width():
-        food.islive = False
-
-    if food.islive:
-        food.drop()
-        food.drawActor(screen)
-        food.estimateCenter()
-        if food.isCollide(hero):
-            food.islive = False
-            hero.decreaseVitality(10)
-
-    if time % heal.interval < 0.1 and heal.islive == False:
-        heal.reset(screen)
+            # 살아있는 경우
+            if foods[i].islive:
+                foods[i].drop()
+                foods[i].drawActor(screen)
+                foods[i].estimateCenter()
+                if foods[i].isCollide(hero):
+                    foods[i].islive = False
+                    hero.decreaseVitality(10)
 
     # 힐팩이 너무 밑으로 내려가면
     if heal.y > screen.get_width():
@@ -280,6 +284,8 @@ while not done:
                 ds = 3
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
+            elif event.key == pygame.K_x:
+                pygame.quit()
 
                 if bulletFire == False:
                     bullet.soundPlay()
