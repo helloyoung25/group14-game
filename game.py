@@ -27,16 +27,17 @@ LIGHTBLUE = (0, 155, 155)
 # printText(출력하고싶은 내용, 컬러, 위치)
 
 # font size 추가 했습니다
-
-
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
-    font = pygame.font.SysFont("consolas", font_size)
+    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
     screen.blit(textSurface, pos)
 
+def printEnergy(self): #체력 수치화 함수 선언
+    x,y,width,height=self.getVitalStatus()
+
+    printText(str(self.vitality)+"/"+str(self.maxVitality),10,(0,0,0),pos=(x+(self.width/2)-15,y+height-10))
+
 # key 입력을 기다리는 함수
-
-
 def wait_for_key():
     waiting = True
     while waiting:
@@ -47,41 +48,38 @@ def wait_for_key():
                 waiting = False
 
 # 게임 시작화면을 구현
-
-
 def show_start_screen():
     screen.fill(LIGHTBLUE)
-    printText("escape", 50, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Arrows to move, space to jump", 30,
+    printText("escape", 70, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Arrows to move, space to jump", 50,
               color=(255, 255, 255), pos=(nX/3, nY/2))
-    printText("Press a key to play", 30, color=(
+    printText("Press a key to play", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
 
 # 스테이지 화면을 구현
-
-
 def show_stage_screen(cnt):
     screen.fill(LIGHTBLUE)
-    printText("Stage" + str(cnt), 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to play", 30, color=(
+    printText("Stage" + str(cnt), 120, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Press a key to play", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
 
 # 게임 종료 화면
-
-
 def show_ending_screen():
     screen.fill(LIGHTBLUE)
-    printText("Game Over", 100, color=(255, 255, 255), pos=(nX/3, nY/4))
-    printText("Press a key to Replay", 30, color=(
+    printText("Game Over", 120, color=(255, 255, 255), pos=(nX/3, nY/4))
+    printText("Your score:"+str(score), 70,
+              color=(255, 255, 255), pos=(nX/3, nY/2))
+    printText("Press a key to quit", 50, color=(
         255, 255, 255), pos=(nX/3, nY*3/4))
     pygame.display.flip()
     wait_for_key()
-# ===========================================파이게임 코딩을 시작하는 부분
 
+
+# ===========================================파이게임 코딩을 시작하는 부분
 
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
@@ -102,7 +100,9 @@ nY = 700
 size = [nX, nY]
 
 keyFlag = None
-
+back_img=["background.png","background5.png","background2.png","background3.png","background4.png"]#배경이미지 리스트
+enermy_img=["tacco.png","cucum.png","hambu.png","melon.png","banana.png"]#적이미지 리스트
+attack_img=["taccoAttack.png","cucumAttack.png","hambuAttack.png","melonAttack.png","bananaAttack.png"]#공격물체 이미지 리스트
 # 게임 창의 크기를 셋팅한다.
 # pygame 라이브러리 사용
 screen = pygame.display.set_mode(size)
@@ -140,16 +140,15 @@ enermy.setVitality(500)
 enermy.estimateCenter()
 
 # enermy 공격 물체 = 음식 (-Attack.png)
-foods: list[Actor.food] = []
+foods: list[Actor.Food] = []
 for i in range(FOODCOUNT):
-    food = Actor.food(pygame)
+    food = Actor.Food(pygame)
     food.setImage("taccoAttack.png")
     food.setScale(70, 70)
     food.setPosition(nX/2, nY/2 - 350)
     food.estimateCenter()
     food.damage(10)
     foods.append(food)
-
 
 # 힐팩 액터
 heal = Actor.Heal(pygame)
@@ -174,7 +173,6 @@ dx = 0
 dy = 0
 ds = 0
 
-
 heal_flag = True
 
 # 적이 죽은 횟수
@@ -196,6 +194,7 @@ while not done:
     screen.fill(BLACK)
     screen.blit(background, (0, 0))
 
+    enermysel=cnt%5
     # 경과시간(ms)을 1000으로 나누어 초 단위로 표시s
     elapsed_timer = (pygame.time.get_ticks()-start_ticks-empty_ticks)/1000
     # 초를 분:초로 나타내기 위함
@@ -203,18 +202,26 @@ while not done:
     # 초를 분:초로 나타내기 위함
     elapsed_timer_sec = int(elapsed_timer % 60)
     # 텍스트 함수
-    printText(str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 20,
-              color=(255, 255, 255), pos=(10, 10))
+    printText("time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
+              color=(255, 71, 71), pos=(10, 10))
 
     # score 표시함수
-    printText("score:"+str(score), 20,  color=(255, 255, 255), pos=(10, 30))
+    printText("score:"+str(score), 30,  color=(255, 71, 71), pos=(10, 40))
 
     # stage 표시함수
-    printText("stage:"+str(cnt+1), 20, color=(255, 255, 255), pos=(10, 50))
+    printText("stage:"+str(cnt+1), 30, color=(255, 71, 71), pos=(10, 70))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
-    for i in range(FOODCOUNT):
+    
+    background=pygame.image.load(back_img[enermysel]) #스테이지에 따른 배경 변화
 
+    enermy.setImage(enermy_img[enermysel]) #스테이지에 따른 적 이미지 변화
+    enermy.setScale(180, 180)
+    
+    food.setImage(attack_img[enermysel]) #스테이지에 따른 공격물체 변화
+    food.setScale(70, 70)
+
+    for i in range(FOODCOUNT):
             if foods[i].islive == False:
                 foods[i].reset(screen)
 
@@ -230,6 +237,8 @@ while not done:
                 if foods[i].isCollide(hero):
                     foods[i].islive = False
 
+    if time % heal.interval < 0.1 and heal.islive == False:
+        heal.reset(screen)
 
     # 힐팩이 너무 밑으로 내려가면
     if heal.y > screen.get_width():
@@ -295,7 +304,6 @@ while not done:
                 bd = -20
                 bullets.append(bullet)
                 bulletFire = True
-                
             elif event.key == pygame.K_x:
                 pygame.quit()
 
@@ -322,7 +330,7 @@ while not done:
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(10)
+        hero.decreaseVitality(5)
 
     if bullet.y < 0:
         bulletFire = False
@@ -355,6 +363,9 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
+    
+    printEnergy(hero)#히어로 체력 수치화
+
 
     if hero.x < 0:
         hero.x = 0
@@ -387,7 +398,8 @@ while not done:
 
         if hero.isDead == True:
             print("나 죽음")
-            pygame.display.update()
+            show_ending_screen()
+            pygame.quit()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -398,6 +410,7 @@ while not done:
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
+                   
         enermy.isDead = False
 
     pygame.display.update()
