@@ -6,9 +6,9 @@ from pygame.locals import *
 
 import random
 import math
-import time
-# =================actor 클래스 정의=============================
 
+
+# =================actor 클래스 정의=============================
 
 class Actor():
 
@@ -39,8 +39,6 @@ class Actor():
         self.islive = True
 
         self.drop_speed = 7
-
-        self.count = 0
 
     def setSound(self, soundPath):
         # 객체에 의존되는 소리
@@ -87,7 +85,7 @@ class Actor():
 
     def decreaseVitality(self, value):
         self.vitality -= value
-        if self.vitality < 0:
+        if self.vitality <= 0:
             self.vitality = 0
             self.isDead = True
 
@@ -106,8 +104,8 @@ class Actor():
         return x, y, width, height
 
     def moveRandomly(self, nX, nY):
-        dX = random.uniform(-5, 5)
-        dY = random.uniform(-5, 5)
+        dX = random.uniform(-30, 30)
+        dY = random.uniform(-7, 7)
         newX = self.centerX + dX
         newY = self.centerY + dY
         # if newX < nX*0.1  or newX > nX*0.5 or newY < nY*0.1 or newY > nY*0.5:
@@ -120,7 +118,7 @@ class Actor():
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
                          2) + math.pow(self.centerY - otherActor.centerY, 2))
 
-        if dist < otherActor.width/1.45:
+        if dist < otherActor.width/2:
             return True
         else:
             return False
@@ -144,6 +142,7 @@ class Heal(Actor):
         self.drop_speed = 10
         self.islive = False
         self.interval = 10
+        self.heal_cnt = 0
 
     def reset(self, screen: pygame.Surface):
         self.setPosition(random.randint(0, screen.get_width()), 0)
@@ -159,6 +158,7 @@ class PowerUp(Actor):
         self.drop_speed = 10
         self.islive = False
         self.interval = 10
+        self.power_cnt = 0
 
     def reset(self, screen: pygame.Surface):
         self.setPosition(random.randint(0, screen.get_width()), 0)
@@ -176,7 +176,8 @@ class Food(Actor):
         self.interval = 10
 
     def reset(self, screen: pygame.Surface):
-        self.setPosition(random.randint(0, screen.get_width()), 0)
+        self.setPosition(random.randint(0, screen.get_width()),
+                         random.randint(-screen.get_height(), 0))
         self.islive = True
 
     def drop(self):
