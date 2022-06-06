@@ -227,6 +227,7 @@ while not done:
                 foods[i].estimateCenter()
                 if foods[i].isCollide(hero):
                     foods[i].islive = False
+                    hero.decreaseVitality(10)
 
 
     # 힐팩이 너무 밑으로 내려가면
