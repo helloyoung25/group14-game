@@ -236,6 +236,7 @@ while not done:
                 foods[i].estimateCenter()
                 if foods[i].isCollide(hero):
                     foods[i].islive = False
+                    hero.decreaseVitality(10)
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
