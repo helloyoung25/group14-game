@@ -7,8 +7,8 @@ from pygame.locals import *
 import random
 import math
 
-# =================actor 클래스 정의=============================
 
+# =================actor 클래스 정의=============================
 
 class Actor():
 
@@ -85,7 +85,7 @@ class Actor():
 
     def decreaseVitality(self, value):
         self.vitality -= value
-        if self.vitality < 0:
+        if self.vitality <= 0:
             self.vitality = 0
             self.isDead = True
 
@@ -117,7 +117,7 @@ class Actor():
     def isCollide(self, otherActor):
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
                          2) + math.pow(self.centerY - otherActor.centerY, 2))
-        print(dist)
+       
         if dist < otherActor.width/2:
             return True
         else:
@@ -125,13 +125,14 @@ class Actor():
 
     def drawActor(self, screen):
         screen.blit(self.actor, (self.x, self.y))
-
+    
     def drawEnergyBar(self, screen):
         x, y, width, height = self.getVitalStatus()
         self.pygame.draw.rect(screen, (255, 255, 255),
                               (x, y, self.width, height))
         self.pygame.draw.rect(screen, (255, 0, 0), (x, y, width, height))
-
+    
+        
     def damage(self, value):
         damage = value
 
@@ -166,7 +167,7 @@ class PowerUp(Actor):
         self.y += self.drop_speed
 
 
-class food(Actor):
+class Food(Actor):
     def __init__(self, pygame):
         super().__init__(pygame)
         self.drop_speed = 10
@@ -177,7 +178,6 @@ class food(Actor):
         self.setPosition(random.randint(0, screen.get_width()),
                          random.randint(-screen.get_height(), 0))
         self.islive = True
-
 
     def drop(self):
         self.y += self.drop_speed
