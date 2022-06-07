@@ -231,6 +231,8 @@ while not done:
 
             # 살아있는 경우
             if foods[i].islive:
+                foods[i].setImage(attack_img[enermysel])
+                foods[i].setScale(70, 70)
                 foods[i].drop()
                 foods[i].drawActor(screen)
                 foods[i].estimateCenter()
@@ -395,6 +397,7 @@ while not done:
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
+        printEnergy(enermy)#적 체력 수치화
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
