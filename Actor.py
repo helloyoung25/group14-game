@@ -83,6 +83,9 @@ class Actor():
         self.centerX = self.x + (self.width/2)
         self.centerY = self.y + (self.height/2)
 
+    def returnLoc(self):
+        return self.x,self.y
+        
     def decreaseVitality(self, value):
         self.vitality -= value
         if self.vitality <= 0:
@@ -98,9 +101,9 @@ class Actor():
     def getVitalStatus(self):
         vitalRatio = self.vitality/self.maxVitality
         x = self.x
-        y = self.y + self.height + 5
+        y = self.y + self.height + 10
         width = vitalRatio * self.width
-        height = 5
+        height = 10
         return x, y, width, height
 
     def moveRandomly(self, nX, nY):
@@ -117,7 +120,8 @@ class Actor():
     def isCollide(self, otherActor):
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
                          2) + math.pow(self.centerY - otherActor.centerY, 2))
-        if dist < otherActor.width/2:
+       
+        if dist < otherActor.width/1.35:
             return True
         else:
             return False
