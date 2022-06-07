@@ -104,8 +104,8 @@ class Actor():
         return x, y, width, height
 
     def moveRandomly(self, nX, nY):
-        dX = random.uniform(-5, 5)
-        dY = random.uniform(-5, 5)
+        dX = random.uniform(-30, 30)
+        dY = random.uniform(-7, 7)
         newX = self.centerX + dX
         newY = self.centerY + dY
         # if newX < nX*0.1  or newX > nX*0.5 or newY < nY*0.1 or newY > nY*0.5:
@@ -117,7 +117,6 @@ class Actor():
     def isCollide(self, otherActor):
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
                          2) + math.pow(self.centerY - otherActor.centerY, 2))
-       
         if dist < otherActor.width/2:
             return True
         else:
@@ -143,6 +142,7 @@ class Heal(Actor):
         self.drop_speed = 10
         self.islive = False
         self.interval = 10
+        self.heal_cnt = 0
 
     def reset(self, screen: pygame.Surface):
         self.setPosition(random.randint(0, screen.get_width()), 0)
@@ -158,6 +158,7 @@ class PowerUp(Actor):
         self.drop_speed = 10
         self.islive = False
         self.interval = 10
+        self.power_cnt = 0
 
     def reset(self, screen: pygame.Surface):
         self.setPosition(random.randint(0, screen.get_width()), 0)
