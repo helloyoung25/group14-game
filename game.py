@@ -19,13 +19,13 @@ score = 0
 bulletdamage = 50
 FOODCOUNT = 10
 
-bmax=0  #bullet max
+bmax = 0  # bullet max
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
 LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
-ORANGE = (255, 132, 0)
+ORAGNE = (255, 132, 0)
 
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
@@ -57,9 +57,12 @@ def printEnergy(self):  # 체력 수치화 함수 선언
 def wait_for_key():
     waiting = True
     while waiting:
-        for event in pg.event.get():
-            if event.type == pg.KEYUP:
-                waiting = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    waiting = False
 
 # 게임 시작화면을 구현
 
@@ -93,7 +96,8 @@ def show_start_screen():
 def show_stage_screen(cnt):
     stage = pygame.image.load("stage.png")
     screen.blit(stage, (0, 0))
-    printText("Stage" + str(cnt), 100, YELLOW, pos=(nX/3, nY/4))
+    printText("Stage" + str(cnt), 150, (247, 5, 5), pos=(280, nY/4))
+    printText("Press Enter", 70, BLACK, pos=(58, 590))
     pygame.display.flip()
     wait_for_key()
 
@@ -129,7 +133,7 @@ bullets = []
 # size라는 list 데이터로 가지고 있음
 size = [nX, nY]
 
-bulletFire=False
+bulletFire = False
 keyFlag = None
 back_img = ["background.png", "background5.png", "background2.png",
             "background3.png", "background4.png"]  # 배경이미지 리스트
@@ -156,7 +160,6 @@ hero.setScale(150, 150)
 hero.setPosition(nX/2-100, nY/2 + 150)
 hero.setVitality(100)
 hero.estimateCenter()
-
 
 
 # actor클래스를 사용하여 객체(적) 하나를 더 생성
@@ -220,7 +223,7 @@ while not done:
     clock.tick(30)
 
     # 게임을 실행하는 기능들을 실제로 여기에 구현
-    
+
     # 스크린의 배경색을 채워넣기
     screen.fill(BLACK)
     screen.blit(background, (0, 0))
@@ -234,13 +237,13 @@ while not done:
     elapsed_timer_sec = int(elapsed_timer % 60)
     # 텍스트 함수
     printText("time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
-              color=(255, 71, 71), pos=(10, 10))
+              BLACK, pos=(10, 10))
 
     # score 표시함수
-    printText("score:"+str(score), 30,  color=(255, 71, 71), pos=(10, 40))
+    printText("score:"+str(score), 30,  BLACK, pos=(10, 40))
 
     # stage 표시함수
-    printText("stage:"+str(cnt+1), 30, color=(255, 71, 71), pos=(10, 70))
+    printText("stage:"+str(cnt+1), 30, BLACK, pos=(10, 70))
 
     # heal 표시
     heal_img = Actor.Heal(pygame)
@@ -248,7 +251,7 @@ while not done:
     heal_img.setScale(50, 50)
 
     screen.blit(heal_img.actor, (10, 100))
-    printText("+"+str(heal.heal_cnt), 20, color=(255, 71, 71), pos=(55, 120))
+    printText("+"+str(heal.heal_cnt), 20, BLACK, pos=(55, 120))
 
     # heal 표시
     power_img = Actor.Heal(pygame)
@@ -257,7 +260,7 @@ while not done:
 
     screen.blit(power_img.actor, (10, 150))
     printText("+"+str(PowerUp.power_cnt), 20,
-              color=(255, 71, 71), pos=(55, 170))
+              BLACK, pos=(55, 170))
 
     time = (pygame.time.get_ticks() - start_ticks) / 1000
 
@@ -292,7 +295,7 @@ while not done:
                 if (now - food_time) / 1000 % 60 < 2:
                     printText("-"+str(10), 20,
                               WHITE, pos=(hero.x + hero.width/2, hero.y - 50))
-
+                    now = pygame.time.get_ticks()
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -354,63 +357,55 @@ while not done:
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                print("왼쪽키 떼짐")
                 dx = 0
             elif event.key == pygame.K_RIGHT:
-                print("오른쪽키 떼짐")
                 dx = 0
             elif event.key == pygame.K_DOWN:
-                print("아래키 떼짐")
                 dy = 0
             elif event.key == pygame.K_UP:
-                print("위로키 떼짐")
                 dy = 0
-            elif event.key == pygame.K_a:
-                print("버튼a 누름")
-                ds = 0
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 뗌")
                 bulletFire = False
     hero.estimateCenter()
     enermy.estimateCenter()
     food.estimateCenter()
- 
-    if bulletFire==True and (bmax % 4==0):
+
+    if bulletFire == True and (bmax % 4 == 0):
         bullet = Actor.Actor(pygame)
         bullet.setImage("bullet.png")
         bullet.setScale(20, 20)
         hero.estimateCenter()
         bullet.setPosition(hero.centerX, hero.centerY)
         bullet.setSound("laser.wav")
-        bullet.soundPlay()      
+        bullet.soundPlay()
         bullets.append(bullet)
-        
 
-    d_bul=[]
+    d_bul = []
     for i in range(len(bullets)):
-        bul_n=bullets[i]
-        bul_n.move(0,bd)
+        bul_n = bullets[i]
+        bul_n.move(0, bd)
         bul_n.drawActor(screen)
-        if bul_n.y<0:
+        if bul_n.y < 0:
             d_bul.append(i)
     for d in d_bul:
         del bullets[d]
-    ds_bul=[]#deletescreen_bullet
+    ds_bul = []  # deletescreen_bullet
     for i in range(len(bullets)):
-        bul_n=bullets[i]
+        bul_n = bullets[i]
         bul_n.estimateCenter()
         enermy.estimateCenter()
-        if bul_n.isCollide(enermy)==True:
+        if bul_n.isCollide(enermy) == True:
             ds_bul.append(i)
             enermy.decreaseVitality(bulletdamage)
-            score+=bulletdamage
+            score += bulletdamage
     for d in ds_bul:
         del bullets[d]
-    
+
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
-
+    printEnergy(hero)
     if hero.isCollide(enermy):
         print("적과 충돌함")
         hero.decreaseVitality(5)
@@ -446,6 +441,7 @@ while not done:
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
+            pygame.mixer.music.stop()
             show_ending_screen()
             pygame.quit()
 
@@ -457,13 +453,13 @@ while not done:
         enermy.setVitality(500 + 300*(cnt))
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
-        hero.move(0,0)
+        hero.move(0, 0)
         enermy.setPosition(nX/2-100, nY/2 - 350)
         bulletFire = False
 
         enermy.isDead = False
 
-    bmax+=1
+    bmax += 1
     pygame.display.update()
 
 # 게임을 끝내는 명령어
