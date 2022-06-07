@@ -24,6 +24,8 @@ BLACK = (0, 0, 0)  # 검정
 LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
+ORANGE = (255, 132, 0)
+
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
 
@@ -31,6 +33,12 @@ YELLOW = (240, 233, 38)
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
+    screen.blit(textSurface, pos)
+
+
+def prFirstText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 255, 255)):
+    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
+    textSurface = font.render(msg, True, color, bgColor)
     screen.blit(textSurface, pos)
 
 
@@ -45,8 +53,6 @@ def wait_for_key():
     waiting = True
     while waiting:
         for event in pg.event.get():
-            if event.type == pg.QUIT:
-                waiting = False
             if event.type == pg.KEYUP:
                 waiting = False
 
@@ -54,7 +60,8 @@ def wait_for_key():
 def show_start_screen():
     start = pygame.image.load("start.png")
     screen.blit(start, (0, 0))
-    printText("떨어지는 음식을 피하라!", 50, YELLOW, pos=(100, 150))
+    prFirstText("하늘에서", 50, WHITE, pos=(100, 150))
+    printText("음식이 내린다면", 50, WHITE, pos=(150, 200))
     pygame.display.flip()
     wait_for_key()
 
@@ -70,7 +77,10 @@ def show_stage_screen(cnt):
 def show_ending_screen():
     end = pygame.image.load("ending_screen.jpg")
     screen.blit(end, (0, 0))
-    printText("Game Over", 50, YELLOW, pos=(100, 150))
+    printText("Game Over", 50, YELLOW, pos=(700, 150))
+    printText("Time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
+              WHITE, pos=(10, 10))
+    printText("Score:"+str(score), 30,  WHITE, pos=(10, 40))
     pygame.display.flip()
     wait_for_key()
 
@@ -251,8 +261,13 @@ while not done:
             foods[i].drawActor(screen)
             foods[i].estimateCenter()
             if foods[i].isCollide(hero):
+                food_time = pygame.time.get_ticks()
                 foods[i].islive = False
                 hero.decreaseVitality(10)
+                now = pygame.time.get_ticks()
+                if (now - food_time) / 1000 % 60 < 2:
+                    printText("-"+str(10), 20,
+                              WHITE, pos=(hero.x + hero.width/2, hero.y - 50))
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -322,6 +337,7 @@ while not done:
                 bullet.setPosition(hero.centerX, hero.centerY)
                 bd = -20
                 bullets.append(bullet)
+
                 bulletFire = True
             elif event.key == pygame.K_x:
                 pygame.quit()
