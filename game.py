@@ -32,7 +32,13 @@ ORANGE = (255, 132, 0)
 # font size 추가 했습니다
 
 
-def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 132, 0)):
+def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
+    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
+    textSurface = font.render(msg, True, color)
+    screen.blit(textSurface, pos)
+
+
+def prFirstText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 255, 255)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color, bgColor)
     screen.blit(textSurface, pos)
@@ -60,7 +66,7 @@ def wait_for_key():
 def show_start_screen():
     start = pygame.image.load("start.png")
     screen.blit(start, (0, 0))
-    printText("하늘에서", 50, WHITE, pos=(100, 150))
+    prFirstText("하늘에서", 50, WHITE, pos=(100, 150))
     printText("음식이 내린다면", 50, WHITE, pos=(150, 200))
     pygame.display.flip()
     wait_for_key()
