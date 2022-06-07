@@ -25,7 +25,7 @@ BLACK = (0, 0, 0)  # 검정
 LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
-ORAGNE = (255, 132, 0)
+ORANGE = (255, 132, 0)
 
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
@@ -414,11 +414,6 @@ while not done:
     if hero.isCollide(enermy):
         print("적과 충돌함")
         hero.decreaseVitality(5)
-
-
- 
-    
-
 
     if hero.x < 0:
         hero.x = 0
