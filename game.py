@@ -24,7 +24,7 @@ BLACK = (0, 0, 0)  # 검정
 LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
-ORANGE = (255, 132, 0)
+ORAGNE = (255, 132, 0)
 
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
@@ -38,7 +38,7 @@ def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
     screen.blit(textSurface, pos)
 
 
-def prFirstText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 255, 255)):
+def prFirstText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 132, 255)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color, bgColor)
     screen.blit(textSurface, pos)
@@ -67,7 +67,7 @@ def show_start_screen():
     start = pygame.image.load("start.png")
     screen.blit(start, (0, 0))
     prFirstText("하늘에서", 50, WHITE, pos=(100, 150))
-    printText("음식이 내린다면", 50, WHITE, pos=(150, 200))
+    prFirstText("음식이 내린다면", 50, WHITE, pos=(150, 200))
     pygame.display.flip()
     wait_for_key()
 
