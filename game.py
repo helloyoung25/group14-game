@@ -30,6 +30,8 @@ ORAGNE = (255, 132, 0)
 # printText(출력하고싶은 내용, 컬러, 위치)
 
 # font size 추가 했습니다
+
+
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
@@ -49,6 +51,8 @@ def printEnergy(self):  # 체력 수치화 함수 선언
               (0, 0, 0), pos=(x+(self.width/2)-15, y+height-10))
 
 # key 입력을 기다리는 함수
+
+
 def wait_for_key():
     waiting = True
     while waiting:
@@ -57,15 +61,34 @@ def wait_for_key():
                 waiting = False
 
 # 게임 시작화면을 구현
+
+
 def show_start_screen():
-    start = pygame.image.load("start.png")
-    screen.blit(start, (0, 0))
-    prFirstText("하늘에서", 50, WHITE, pos=(100, 150))
-    prFirstText("음식이 내린다면", 50, WHITE, pos=(150, 200))
+    howto = pygame.image.load("howto.png")
+    explain = pygame.image.load("explain.png")
+    explain1 = pygame.image.load("explain1.png")
+    explain2 = pygame.image.load("explain2.png")
+
+    screen.blit(howto, (0, 0))
     pygame.display.flip()
     wait_for_key()
 
+    screen.blit(explain, (0, 0))
+    pygame.display.flip()
+    wait_for_key()
+
+    screen.blit(explain1, (0, 0))
+    pygame.display.flip()
+    wait_for_key()
+
+    screen.blit(explain2, (0, 0))
+    pygame.display.flip()
+    wait_for_key()
+
+
 # 스테이지 화면을 구현
+
+
 def show_stage_screen(cnt):
     stage = pygame.image.load("stage.png")
     screen.blit(stage, (0, 0))
@@ -74,6 +97,8 @@ def show_stage_screen(cnt):
     wait_for_key()
 
 # 게임 종료 화면
+
+
 def show_ending_screen():
     end = pygame.image.load("ending_screen.jpg")
     screen.blit(end, (0, 0))
@@ -90,9 +115,6 @@ def show_ending_screen():
 # 가장 윗줄에 게임에 대한 값들을 초기화
 pygame.init()
 
-# 배경음악을 셋팅
-pygame.mixer.music.load("background.mp3")
-pygame.mixer.music.play(-1)
 
 # 배경 맵
 background = pygame.image.load("background.png")
@@ -189,8 +211,12 @@ cnt = 0
 
 # 시작 전 화면을 보여줌
 show_start_screen()
+show_stage_screen(cnt+1)
 # 스테이지 사이사이의 비어있는 시간을 계산
 empty_ticks = pygame.time.get_ticks()-start_ticks
+# 배경음악을 셋팅
+pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.play(-1)
 # 반복자 while문
 # done이 False를 유지하는 동안 계속 실행, not False = True
 while not done:
@@ -257,6 +283,8 @@ while not done:
 
         # 살아있는 경우
         if foods[i].islive:
+            foods[i].setImage(attack_img[enermysel])
+            foods[i].setScale(70, 70)
             foods[i].drop()
             foods[i].drawActor(screen)
             foods[i].estimateCenter()
@@ -268,18 +296,6 @@ while not done:
                 if (now - food_time) / 1000 % 60 < 2:
                     printText("-"+str(10), 20,
                               WHITE, pos=(hero.x + hero.width/2, hero.y - 50))
-
-
-            # 살아있는 경우
-            if foods[i].islive:
-                foods[i].setImage(attack_img[enermysel])
-                foods[i].setScale(70, 70)
-                foods[i].drop()
-                foods[i].drawActor(screen)
-                foods[i].estimateCenter()
-                if foods[i].isCollide(hero):
-                    foods[i].islive = False
-                    hero.decreaseVitality(10)
 
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
@@ -296,7 +312,7 @@ while not done:
         if heal.isCollide(hero):
             heal.islive = False
             # 생명력 증가량
-            hero.increaseVitality(20)
+            hero.increaseVitality(10)
             heal.heal_cnt += 1
 
     if time % PowerUp.interval < 0.1 and PowerUp.islive == False:
@@ -326,23 +342,14 @@ while not done:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                print("왼쪽키 누름")
-                dx = - 10
+                dx = - 18
             elif event.key == pygame.K_RIGHT:
-                print("오른쪽키 누름")
-                dx = 10
+                dx = 18
             elif event.key == pygame.K_DOWN:
-                print("아래키 누름")
-                dy = 10
+                dy = 18
             elif event.key == pygame.K_UP:
-                print("위로키 누름")
-                dy = -10
-            elif event.key == pygame.K_a:
-                print("버튼a 누름")
-                ds = 3
+                dy = -18
             elif event.key == pygame.K_SPACE:
-                print("스페이스 버튼 누름")
-
                 bullet.soundPlay()
                 hero.estimateCenter()
                 # 총을 쏠때, 총알의 위치를 주인공의 위치로 셋팅
@@ -410,9 +417,6 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
-    
-    printEnergy(hero)#히어로 체력 수치화
-
 
     printEnergy(hero)  # 히어로 체력 수치화
 
@@ -443,11 +447,10 @@ while not done:
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
-        printEnergy(enermy)#적 체력 수치화
+        printEnergy(enermy)  # 적 체력 수치화
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
-            print("나 죽음")
             show_ending_screen()
             pygame.quit()
 
@@ -456,7 +459,7 @@ while not done:
         cnt += 1
         show_stage_screen(cnt+1)
         end_empty = pygame.time.get_ticks()  # 다음 stage가 시작되기 직전 시점 기록
-        enermy.setVitality(500*(cnt+1))
+        enermy.setVitality(500 + 300*(cnt))
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)

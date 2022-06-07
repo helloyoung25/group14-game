@@ -98,13 +98,13 @@ class Actor():
     def getVitalStatus(self):
         vitalRatio = self.vitality/self.maxVitality
         x = self.x
-        y = self.y + self.height + 5
+        y = self.y + self.height + 10
         width = vitalRatio * self.width
-        height = 5
+        height = 10
         return x, y, width, height
 
     def moveRandomly(self, nX, nY):
-        dX = random.uniform(-30, 30)
+        dX = random.uniform(-33, 33)
         dY = random.uniform(-7, 7)
         newX = self.centerX + dX
         newY = self.centerY + dY
@@ -124,14 +124,13 @@ class Actor():
 
     def drawActor(self, screen):
         screen.blit(self.actor, (self.x, self.y))
-    
+
     def drawEnergyBar(self, screen):
         x, y, width, height = self.getVitalStatus()
         self.pygame.draw.rect(screen, (255, 255, 255),
                               (x, y, self.width, height))
         self.pygame.draw.rect(screen, (255, 0, 0), (x, y, width, height))
-    
-        
+
     def damage(self, value):
         damage = value
 
