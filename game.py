@@ -364,7 +364,9 @@ while not done:
                 dy = 0
             elif event.key == pygame.K_UP:
                 dy = 0
-
+            elif event.key == pygame.K_SPACE:
+                print("스페이스 버튼 뗌")
+                bulletFire = False
     hero.estimateCenter()
     enermy.estimateCenter()
     food.estimateCenter()
@@ -403,7 +405,7 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
-
+    printEnergy(hero)
     if hero.isCollide(enermy):
         print("적과 충돌함")
         hero.decreaseVitality(5)
