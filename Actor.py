@@ -104,7 +104,7 @@ class Actor():
         return x, y, width, height
 
     def moveRandomly(self, nX, nY):
-        dX = random.uniform(-30, 30)
+        dX = random.uniform(-33, 33)
         dY = random.uniform(-7, 7)
         newX = self.centerX + dX
         newY = self.centerY + dY

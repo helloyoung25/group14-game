@@ -64,10 +64,14 @@ def wait_for_key():
 
 
 def show_start_screen():
+    howto = pygame.image.load("howto.png")
     explain = pygame.image.load("explain.png")
     explain1 = pygame.image.load("explain1.png")
     explain2 = pygame.image.load("explain2.png")
-    start = pygame.image.load("start.png")
+
+    screen.blit(howto, (0, 0))
+    pygame.display.flip()
+    wait_for_key()
 
     screen.blit(explain, (0, 0))
     pygame.display.flip()
@@ -81,11 +85,6 @@ def show_start_screen():
     pygame.display.flip()
     wait_for_key()
 
-    screen.blit(start, (0, 0))
-    prFirstText("하늘에서", 50, WHITE, pos=(100, 150))
-    prFirstText("음식이 내린다면", 50, WHITE, pos=(150, 200))
-    pygame.display.flip()
-    wait_for_key()
 
 # 스테이지 화면을 구현
 
@@ -212,6 +211,7 @@ cnt = 0
 
 # 시작 전 화면을 보여줌
 show_start_screen()
+show_stage_screen(cnt+1)
 # 스테이지 사이사이의 비어있는 시간을 계산
 empty_ticks = pygame.time.get_ticks()-start_ticks
 # 배경음악을 셋팅
@@ -312,7 +312,7 @@ while not done:
         if heal.isCollide(hero):
             heal.islive = False
             # 생명력 증가량
-            hero.increaseVitality(20)
+            hero.increaseVitality(10)
             heal.heal_cnt += 1
 
     if time % PowerUp.interval < 0.1 and PowerUp.islive == False:
@@ -459,7 +459,7 @@ while not done:
         cnt += 1
         show_stage_screen(cnt+1)
         end_empty = pygame.time.get_ticks()  # 다음 stage가 시작되기 직전 시점 기록
-        enermy.setVitality(500*(cnt+1))
+        enermy.setVitality(500 + 300*(cnt))
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
         enermy.setPosition(nX/2-100, nY/2 - 350)
