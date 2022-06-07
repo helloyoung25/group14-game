@@ -415,11 +415,6 @@ while not done:
         print("적과 충돌함")
         hero.decreaseVitality(5)
 
-
- 
-    
-
-
     if hero.x < 0:
         hero.x = 0
 
