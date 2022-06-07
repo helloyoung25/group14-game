@@ -269,6 +269,18 @@ while not done:
                     printText("-"+str(10), 20,
                               WHITE, pos=(hero.x + hero.width/2, hero.y - 50))
 
+
+            # 살아있는 경우
+            if foods[i].islive:
+                foods[i].setImage(attack_img[enermysel])
+                foods[i].setScale(70, 70)
+                foods[i].drop()
+                foods[i].drawActor(screen)
+                foods[i].estimateCenter()
+                if foods[i].isCollide(hero):
+                    foods[i].islive = False
+                    hero.decreaseVitality(10)
+
     if time % heal.interval < 0.1 and heal.islive == False:
         heal.reset(screen)
 
@@ -431,6 +443,7 @@ while not done:
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
+        printEnergy(enermy)#적 체력 수치화
         enermy.moveRandomly(nX, nY)
 
         if hero.isDead == True:
