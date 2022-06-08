@@ -25,14 +25,12 @@ BLACK = (0, 0, 0)  # 검정
 LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
-ORAGNE = (255, 132, 0)
+ORANGE = (255, 132, 0)
 
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
 
 # font size 추가 했습니다
-
-
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
@@ -65,8 +63,6 @@ def wait_for_key():
                     waiting = False
 
 # 게임 시작화면을 구현
-
-
 def show_start_screen():
     howto = pygame.image.load("howto.png")
     explain = pygame.image.load("explain.png")
@@ -91,8 +87,6 @@ def show_start_screen():
 
 
 # 스테이지 화면을 구현
-
-
 def show_stage_screen(cnt):
     stage = pygame.image.load("stage.png")
     screen.blit(stage, (0, 0))
@@ -102,8 +96,6 @@ def show_stage_screen(cnt):
     wait_for_key()
 
 # 게임 종료 화면
-
-
 def show_ending_screen():
     end = pygame.image.load("ending_screen.jpg")
     screen.blit(end, (0, 0))
@@ -129,7 +121,9 @@ nX = 1010
 # 게임 창의 Y(세로)의 차원 (길이)
 nY = 700
 
+# 총알들 모아두는 리스트
 bullets = []
+
 # size라는 list 데이터로 가지고 있음
 size = [nX, nY]
 
@@ -183,7 +177,7 @@ for i in range(FOODCOUNT):
 
 # 힐팩 액터
 heal = Actor.Heal(pygame)
-heal.setImage("hill.png")
+heal.setImage("heal.png")
 heal.setScale(70, 70)
 heal.estimateCenter()
 
@@ -192,9 +186,6 @@ PowerUp = Actor.PowerUp(pygame)
 PowerUp.setImage("power.png")
 PowerUp.setScale(50, 50)
 PowerUp.estimateCenter()
-
-
-# 총알 좌표들 모아두는 리스트
 
 # bullet delta 총알이 날아가는 변화량
 bd = -20
@@ -247,7 +238,7 @@ while not done:
 
     # heal 표시
     heal_img = Actor.Heal(pygame)
-    heal_img.setImage("hill.png")
+    heal_img.setImage("heal.png")
     heal_img.setScale(50, 50)
 
     screen.blit(heal_img.actor, (10, 100))
@@ -342,7 +333,7 @@ while not done:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                dx = - 18
+                dx = -18
             elif event.key == pygame.K_RIGHT:
                 dx = 18
             elif event.key == pygame.K_DOWN:
