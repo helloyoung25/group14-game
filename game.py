@@ -107,10 +107,10 @@ def show_stage_screen(cnt):
 def show_ending_screen():
     end = pygame.image.load("ending_screen.jpg")
     screen.blit(end, (0, 0))
-    printText("Game Over", 50, YELLOW, pos=(700, 150))
-    printText("Time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
-              WHITE, pos=(10, 10))
-    printText("Score:"+str(score), 30,  WHITE, pos=(10, 40))
+    printText("Game Over", 80, YELLOW, pos=(550, 150))
+    printText("Time     "+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 40,
+              YELLOW, pos=(550, 300))
+    printText("Score     "+str(score), 40,  YELLOW, pos=(550, 400))
     pygame.display.flip()
     wait_for_key()
 
