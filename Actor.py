@@ -106,16 +106,15 @@ class Actor():
         height = 10
         return x, y, width, height
 
-    def moveRandomly(self, nX, nY):
-        dX = random.uniform(-33, 33)
-        dY = random.uniform(-7, 7)
-        newX = self.centerX + dX
-        newY = self.centerY + dY
-        # if newX < nX*0.1  or newX > nX*0.5 or newY < nY*0.1 or newY > nY*0.5:
-        #     pass
-        # else:
-        self.x = self.x + dX  # random.uniform(-20, 20)
-        self.y = self.y + dY  # random.uniform(-20, 20)
+    def moveattack(self,otherActor):
+        if otherActor.x>self.x:
+            dx=5
+        else :dx=-5
+        if otherActor.y<self.y:
+            dy=-5
+        else :dy=5
+        self.x = self.x + dx  
+        self.y = self.y + dy  
 
     def isCollide(self, otherActor):
         dist = math.sqrt(math.pow(self.centerX - otherActor.centerX,
