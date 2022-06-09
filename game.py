@@ -106,6 +106,32 @@ def show_ending_screen():
     pygame.display.flip()
     wait_for_key()
 
+def herocantout():#히어로가 화면 밖으로 나가지 못하게 하는 함수
+    if hero.x < 0:
+        hero.x = 0
+
+    if hero.x > nX-150:
+        hero.x = nX-150
+
+    if hero.y < 0:
+        hero.y = 0
+
+    if hero.y > nY-150:
+        hero.y = nY-150
+
+def enermycantout():#적이 화면 밖으로 나가지 않게 하는 함수
+    if enermy.x < 0:
+        enermy.x = 0
+
+    if enermy.x > nX-180:
+        enermy.x = nX-180
+
+    if enermy.y < 0:
+        enermy.y = 0
+
+    if enermy.y > nY-180:
+        enermy.y = nY-180
+
 
 # ===========================================파이게임 코딩을 시작하는 부분
 
@@ -333,13 +359,13 @@ while not done:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                dx = -18
+                dx = -20
             elif event.key == pygame.K_RIGHT:
-                dx = 18
+                dx = 20
             elif event.key == pygame.K_DOWN:
-                dy = 18
+                dy = 20
             elif event.key == pygame.K_UP:
-                dy = -18
+                dy = -20
             elif event.key == pygame.K_SPACE:
                 print("스페이스 버튼 누름")
                 bulletFire = True
@@ -362,7 +388,7 @@ while not done:
     enermy.estimateCenter()
     food.estimateCenter()
 
-    if bulletFire == True and (bmax % 4 == 0):
+    if bulletFire == True and (bmax % 3 == 0):
         bullet = Actor.Actor(pygame)
         bullet.setImage("bullet.png")
         bullet.setScale(20, 20)
@@ -372,21 +398,21 @@ while not done:
         bullet.soundPlay()
         bullets.append(bullet)
 
-    d_bul = []
-    for i in range(len(bullets)):
+    d_bul = []#지울 총알을 담을 리스트
+    for i in range(len(bullets)):#리스트에 담긴 총알 각각 움직이기
         bul_n = bullets[i]
         bul_n.move(0, bd)
         bul_n.drawActor(screen)
-        if bul_n.y < 0:
-            d_bul.append(i)
-    for d in d_bul:
+        if bul_n.y < 0:#화면밖으로 총알이 나갈경우
+            d_bul.append(i)#지울 총알을 d_bul리스트에 담기
+    for d in d_bul:#총알 지우기
         del bullets[d]
     ds_bul = []  # deletescreen_bullet
     for i in range(len(bullets)):
         bul_n = bullets[i]
         bul_n.estimateCenter()
         enermy.estimateCenter()
-        if bul_n.isCollide(enermy) == True:
+        if bul_n.isCollide(enermy) == True:#총알이 적과 닿았을 때
             ds_bul.append(i)
             enermy.decreaseVitality(bulletdamage)
             score += bulletdamage
@@ -396,45 +422,28 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
-    printEnergy(hero)
+    
+    printEnergy(hero)#히어로 체력 수치화
+
+
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(5)
+        hero.decreaseVitality(3) 
 
-    if hero.x < 0:
-        hero.x = 0
+    herocantout() #히어로가 화면 밖으로 나가지 못하게 하는 함수
+    enermycantout()#적이 화면 밖으로 나가지 않게 하는 함수
 
-    if hero.x > nX-150:
-        hero.x = nX-150
-
-    if hero.y < 0:
-        hero.y = 0
-
-    if hero.y > nY-150:
-        hero.y = nY-150
-
-    if enermy.x < 0:
-        enermy.x = 0
-
-    if enermy.x > nX-180:
-        enermy.x = nX-180
-
-    if enermy.y < 0:
-        enermy.y = 0
-
-    if enermy.y > nY-180:
-        enermy.y = nY-180
 
     if enermy.isDead == False:
         enermy.drawActor(screen)
         enermy.drawEnergyBar(screen)
         printEnergy(enermy)  # 적 체력 수치화
-        enermy.moveRandomly(nX, nY)
+        enermy.moveattack(hero)
 
         if hero.isDead == True:
             pygame.mixer.music.stop()
             show_ending_screen()
-            pygame.quit()
+            pygame.quit() 
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -447,7 +456,6 @@ while not done:
         hero.move(0, 0)
         enermy.setPosition(nX/2-100, nY/2 - 350)
         bulletFire = False
-
         enermy.isDead = False
 
     bmax += 1
