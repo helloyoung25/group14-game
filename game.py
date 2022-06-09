@@ -1,8 +1,3 @@
-# 버그: 피사체가 사라졌지만 총알은 계속 맞는 버그
-# 버그: 피사체가 있는 위치에 총을 쏠 경우 총알의 발사속도가 빨라짐
-# 버그: 발사체의 y축 위치에 따라서 총알의 발사속도가 달라짐
-# 버그: 발사체가 화면 밖으로 계속 나갈 수 있음.
-
 # pygame 라이브러리를 가져와라.
 # from multiprocessing.context import ForkServerProcess
 import pygame
@@ -22,34 +17,27 @@ FOODCOUNT = 10
 bmax = 0  # bullet max
 # 컬러 값을 미리 설정한다. 컴퓨터에서 컬러를 표현할때 RGB를 사용한다.
 BLACK = (0, 0, 0)  # 검정
-LIGHTBLUE = (0, 155, 155)
 WHITE = (242, 242, 242)
 YELLOW = (240, 233, 38)
-ORANGE = (255, 132, 0)
 
 # 게임창에 텍스트를 출력하기 위한 함수코드
 # printText(출력하고싶은 내용, 컬러, 위치)
 
 # font size 추가 했습니다
+
+
 def printText(msg, font_size, color=(255, 255, 255), pos=(50, 50)):
     font = pygame.font.Font('bmzua_ttf.ttf', font_size)
     textSurface = font.render(msg, True, color)
     screen.blit(textSurface, pos)
 
 
-def prFirstText(msg, font_size, color=(255, 255, 255), pos=(50, 50), bgColor=(255, 132, 255)):
-    font = pygame.font.Font('bmzua_ttf.ttf', font_size)
-    textSurface = font.render(msg, True, color, bgColor)
-    screen.blit(textSurface, pos)
-
-
 def printEnergy(self):  # 체력 수치화 함수 선언
     x, y, width, height = self.getVitalStatus()
-
     printText(str(self.vitality)+"/"+str(self.maxVitality), 10,
               (0, 0, 0), pos=(x+(self.width/2)-15, y+height-10))
 
-# key 입력을 기다리는 함수
+# enter 입력을 기다리는 함수
 
 
 def wait_for_key():
@@ -63,6 +51,8 @@ def wait_for_key():
                     waiting = False
 
 # 게임 시작화면을 구현
+
+
 def show_start_screen():
     howto = pygame.image.load("howto.png")
     explain = pygame.image.load("explain.png")
@@ -96,17 +86,23 @@ def show_stage_screen(cnt):
     wait_for_key()
 
 # 게임 종료 화면
+
+
 def show_ending_screen():
     end = pygame.image.load("ending_screen.jpg")
     screen.blit(end, (0, 0))
-    printText("Game Over", 50, YELLOW, pos=(700, 150))
-    printText("Time:"+str(elapsed_timer_hour)+":"+str(elapsed_timer_sec), 30,
-              WHITE, pos=(10, 10))
-    printText("Score:"+str(score), 30,  WHITE, pos=(10, 40))
+    pygame.draw.rect(screen, (7, 95, 247), (600, 150, 340, 210))
+    printText("Game Over", 70, YELLOW, pos=(600, 150))
+    printText("Time :      "+str(elapsed_timer_hour)+":" +
+              str(elapsed_timer_sec), 40, YELLOW, pos=(600, 270))
+    printText("Score :      "+str(score), 40,  YELLOW, pos=(600, 310))
     pygame.display.flip()
     wait_for_key()
 
-def herocantout():#히어로가 화면 밖으로 나가지 못하게 하는 함수
+# 히어로가 화면 밖으로 나가지 못하게 하는 함수
+
+
+def herocantout():
     if hero.x < 0:
         hero.x = 0
 
@@ -119,7 +115,10 @@ def herocantout():#히어로가 화면 밖으로 나가지 못하게 하는 함�
     if hero.y > nY-150:
         hero.y = nY-150
 
-def enermycantout():#적이 화면 밖으로 나가지 않게 하는 함수
+# 적이 화면 밖으로 나가지 않게 하는 함수
+
+
+def enermycantout():
     if enermy.x < 0:
         enermy.x = 0
 
@@ -155,12 +154,15 @@ size = [nX, nY]
 
 bulletFire = False
 keyFlag = None
+# 배경이미지 리스트
 back_img = ["background.png", "background5.png", "background2.png",
-            "background3.png", "background4.png"]  # 배경이미지 리스트
+            "background3.png", "background4.png"]
+# 적이미지 리스트
 enermy_img = ["tacco.png", "cucum.png", "hambu.png",
-              "melon.png", "banana.png"]  # 적이미지 리스트
+              "melon.png", "banana.png"]
+# 공격물체 이미지 리스트
 attack_img = ["taccoAttack.png", "cucumAttack.png", "hambuAttack.png",
-              "melonAttack.png", "bananaAttack.png"]  # 공격물체 이미지 리스트
+              "melonAttack.png", "bananaAttack.png"]
 # 게임 창의 크기를 셋팅한다.
 # pygame 라이브러리 사용
 screen = pygame.display.set_mode(size)
@@ -170,7 +172,6 @@ pygame.display.set_caption("escape food")
 # 시간 시작 tick을 받아옴
 start_ticks = pygame.time.get_ticks()
 
-done = False
 clock = pygame.time.Clock()
 
 # Actor클래스를 사용하여 객체(주인공) 하나를 생성
@@ -224,17 +225,18 @@ heal_flag = True
 # 적이 죽은 횟수
 cnt = 0
 
-
-# 시작 전 화면을 보여줌
-show_start_screen()
-show_stage_screen(cnt+1)
 # 스테이지 사이사이의 비어있는 시간을 계산
 empty_ticks = pygame.time.get_ticks()-start_ticks
 # 배경음악을 셋팅
 pygame.mixer.music.load("background.mp3")
 pygame.mixer.music.play(-1)
+
+# 시작 전 화면을 보여줌
+show_start_screen()
+show_stage_screen(cnt+1)
 # 반복자 while문
 # done이 False를 유지하는 동안 계속 실행, not False = True
+done = False
 while not done:
     # set on 10 frames per second (FPS)
     clock.tick(30)
@@ -398,21 +400,21 @@ while not done:
         bullet.soundPlay()
         bullets.append(bullet)
 
-    d_bul = []#지울 총알을 담을 리스트
-    for i in range(len(bullets)):#리스트에 담긴 총알 각각 움직이기
+    d_bul = []  # 지울 총알을 담을 리스트
+    for i in range(len(bullets)):  # 리스트에 담긴 총알 각각 움직이기
         bul_n = bullets[i]
         bul_n.move(0, bd)
         bul_n.drawActor(screen)
-        if bul_n.y < 0:#화면밖으로 총알이 나갈경우
-            d_bul.append(i)#지울 총알을 d_bul리스트에 담기
-    for d in d_bul:#총알 지우기
+        if bul_n.y < 0:  # 화면밖으로 총알이 나갈경우
+            d_bul.append(i)  # 지울 총알을 d_bul리스트에 담기
+    for d in d_bul:  # 총알 지우기
         del bullets[d]
     ds_bul = []  # deletescreen_bullet
     for i in range(len(bullets)):
         bul_n = bullets[i]
         bul_n.estimateCenter()
         enermy.estimateCenter()
-        if bul_n.isCollide(enermy) == True:#총알이 적과 닿았을 때
+        if bul_n.isCollide(enermy) == True:  # 총알이 적과 닿았을 때
             ds_bul.append(i)
             enermy.decreaseVitality(bulletdamage)
             score += bulletdamage
@@ -422,17 +424,15 @@ while not done:
     hero.move(dx, dy)
     hero.drawActor(screen)
     hero.drawEnergyBar(screen)
-    
-    printEnergy(hero)#히어로 체력 수치화
 
+    printEnergy(hero)  # 히어로 체력 수치화
 
     if hero.isCollide(enermy):
         print("적과 충돌함")
-        hero.decreaseVitality(3) 
+        hero.decreaseVitality(3)
 
-    herocantout() #히어로가 화면 밖으로 나가지 못하게 하는 함수
-    enermycantout()#적이 화면 밖으로 나가지 않게 하는 함수
-
+    herocantout()  # 히어로가 화면 밖으로 나가지 못하게 하는 함수
+    enermycantout()  # 적이 화면 밖으로 나가지 않게 하는 함수
 
     if enermy.isDead == False:
         enermy.drawActor(screen)
@@ -443,7 +443,7 @@ while not done:
         if hero.isDead == True:
             pygame.mixer.music.stop()
             show_ending_screen()
-            pygame.quit() 
+            pygame.quit()
 
     elif enermy.isDead == True:
         start_empty = pygame.time.get_ticks()  # stage가 전환되는 시점 기록
@@ -453,7 +453,6 @@ while not done:
         enermy.setVitality(500 + 300*(cnt))
         empty_ticks += (end_empty - start_empty)
         hero.setPosition(nX/2-100, nY/2 + 150)
-        hero.move(0, 0)
         enermy.setPosition(nX/2-100, nY/2 - 350)
         bulletFire = False
         enermy.isDead = False
